@@ -1,4 +1,5 @@
 import {ScrollView, Text, View} from '@tarojs/components'
+import Taro from '@tarojs/taro'
 import {useState} from 'react'
 
 interface WikiItem {
@@ -74,13 +75,20 @@ export default function Wiki() {
     setExpandedGodox(expandedGodox === id ? null : id)
   }
 
+  const handleBack = () => {
+    Taro.navigateBack()
+  }
+
   return (
     <View className="min-h-screen bg-gradient-dark">
-      <ScrollView scrollY className="h-screen" style={{background: 'transparent'}}>
+      <ScrollView scrollY className="h-screen scrollbar-hidden" style={{background: 'transparent'}}>
         <View className="px-4 py-6 pb-24">
-          {/* 标题 */}
+          {/* 返回按钮和标题 */}
           <View className="mb-6">
-            <Text className="text-2xl font-bold text-foreground block mb-2">器材百科</Text>
+            <View className="flex flex-row items-center mb-4">
+              <View className="i-mdi-arrow-left text-2xl text-foreground mr-2" onClick={handleBack} />
+              <Text className="text-2xl font-bold text-foreground">器材百科</Text>
+            </View>
             <Text className="text-sm text-muted-foreground block">了解您的 Canon R50 和 Godox TT685II</Text>
           </View>
 

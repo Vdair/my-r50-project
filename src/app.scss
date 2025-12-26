@@ -35,6 +35,31 @@
     --shadow-primary: 0 10px 30px -10px hsl(0 70% 51% / 0.3);
     --shadow-accent: 0 10px 30px -10px hsl(28 93% 48% / 0.3);
   }
+  
+  /* 自定义滚动条样式 - 适用于 H5 */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: hsl(0 0% 30%);
+    border-radius: 3px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(0 70% 51%);
+  }
+  
+  /* Firefox 滚动条样式 */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(0 0% 30%) transparent;
+  }
 }
 
 @layer utilities {
@@ -57,5 +82,15 @@
   
   .text-shadow-glow {
     text-shadow: 0 0 20px currentColor;
+  }
+  
+  /* 隐藏滚动条但保持滚动功能 */
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }

@@ -1,9 +1,9 @@
 import {Button, Input, ScrollView, Switch, Text, View} from '@tarojs/components'
-import {showToast} from '@tarojs/taro'
+import Taro, {showToast} from '@tarojs/taro'
 import {useCallback} from 'react'
 import {type LensType, type LightingType, type SceneType, type StyleType, useCameraStore} from '@/store/cameraStore'
 
-export default function Home() {
+export default function Consultant() {
   const {
     selectedLens,
     flashEnabled,
@@ -31,13 +31,20 @@ export default function Home() {
     showToast({title: '参数生成成功', icon: 'success'})
   }, [scene, customScene, generateParams])
 
+  const handleBack = () => {
+    Taro.navigateBack()
+  }
+
   return (
     <View className="min-h-screen bg-gradient-dark">
-      <ScrollView scrollY className="h-screen" style={{background: 'transparent'}}>
+      <ScrollView scrollY className="h-screen scrollbar-hidden" style={{background: 'transparent'}}>
         <View className="px-4 py-6 pb-32">
-          {/* 标题 */}
+          {/* 返回按钮和标题 */}
           <View className="mb-6">
-            <Text className="text-2xl font-bold text-foreground block mb-2">AI 参数咨询师</Text>
+            <View className="flex flex-row items-center mb-4">
+              <View className="i-mdi-arrow-left text-2xl text-foreground mr-2" onClick={handleBack} />
+              <Text className="text-2xl font-bold text-foreground">AI 场景助手</Text>
+            </View>
             <Text className="text-sm text-muted-foreground block">为您的 Canon R50 生成最佳拍摄参数</Text>
           </View>
 
@@ -278,7 +285,7 @@ export default function Home() {
         {/* 底部固定按钮 */}
         <View
           className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background to-transparent"
-          style={{paddingBottom: '80px'}}>
+          style={{paddingBottom: '20px'}}>
           <Button
             className={`w-full text-white py-4 rounded-xl break-keep text-base font-semibold ${
               isGenerating ? 'bg-muted' : 'bg-gradient-primary'
