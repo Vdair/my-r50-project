@@ -10,7 +10,11 @@ export default (
   mini: {
     debugReact: true
   },
-  h5: {},
+  h5: {
+    viteVars: {
+      envPrefix: ['TARO_APP_', 'VITE_']
+    }
+  },
   compiler: {
     type: 'vite',
     vitePlugins: [

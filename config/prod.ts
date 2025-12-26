@@ -3,6 +3,9 @@ import type {UserConfigExport} from '@tarojs/cli'
 export default {
   mini: {},
   h5: {
+    viteVars: {
+      envPrefix: ['TARO_APP_', 'VITE_']
+    }
     /**
      * WebpackChain 插件配置
      * @docs https://github.com/neutrinojs/webpack-chain
