@@ -4,7 +4,8 @@ import {useEffect} from 'react'
 import {type HistoryItem, useCameraStore} from '@/store/cameraStore'
 
 export default function Result() {
-  const {params, selectedLens, flashEnabled, scene, customScene, lighting, style, addToHistory} = useCameraStore()
+  const {params, selectedLens, flashEnabled, scene, customScene, lighting, weather, style, addToHistory} =
+    useCameraStore()
 
   useEffect(() => {
     // 保存到历史记录
@@ -17,12 +18,13 @@ export default function Result() {
         scene: scene,
         customScene: scene === 'custom' ? customScene : undefined,
         lighting: lighting,
+        weather: weather,
         style: style,
         params: params
       }
       addToHistory(historyItem)
     }
-  }, [params, addToHistory, customScene, flashEnabled, lighting, scene, selectedLens, style])
+  }, [params, addToHistory, customScene, flashEnabled, lighting, weather, scene, selectedLens, style])
 
   const handleBack = () => {
     Taro.navigateBack()

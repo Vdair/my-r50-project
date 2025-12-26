@@ -1,7 +1,54 @@
 import {Button, Input, ScrollView, Switch, Text, View} from '@tarojs/components'
 import Taro, {showToast} from '@tarojs/taro'
 import {useCallback} from 'react'
-import {type LensType, type LightingType, type SceneType, type StyleType, useCameraStore} from '@/store/cameraStore'
+import {
+  type LensType,
+  type LightingType,
+  type SceneType,
+  type StyleType,
+  useCameraStore,
+  type WeatherType
+} from '@/store/cameraStore'
+
+// 场景选项配置
+const sceneOptions: Array<{value: SceneType; label: string; icon: string}> = [
+  {value: 'portrait-night', label: '夜景人像', icon: 'i-mdi-account-star'},
+  {value: 'outdoor-sport', label: '户外运动', icon: 'i-mdi-run'},
+  {value: 'indoor-still', label: '室内静物', icon: 'i-mdi-lamp'},
+  {value: 'outdoor-landscape', label: '户外风景', icon: 'i-mdi-image-filter-hdr'},
+  {value: 'custom', label: '自定义', icon: 'i-mdi-pencil'}
+]
+
+// 光线环境配置
+const lightingOptions: Array<{value: LightingType; label: string; icon: string}> = [
+  {value: 'dawn', label: '清晨', icon: 'i-mdi-weather-sunset-up'},
+  {value: 'noon', label: '正午', icon: 'i-mdi-white-balance-sunny'},
+  {value: 'golden', label: '黄金时刻', icon: 'i-mdi-weather-sunset'},
+  {value: 'night', label: '夜晚', icon: 'i-mdi-weather-night'}
+]
+
+// 天气情况配置
+const weatherOptions: Array<{value: WeatherType; label: string; icon: string}> = [
+  {value: 'sunny', label: '晴天', icon: 'i-mdi-weather-sunny'},
+  {value: 'cloudy', label: '多云', icon: 'i-mdi-weather-partly-cloudy'},
+  {value: 'overcast', label: '阴天', icon: 'i-mdi-weather-cloudy'},
+  {value: 'rainy', label: '雨天', icon: 'i-mdi-weather-rainy'},
+  {value: 'foggy', label: '雾天', icon: 'i-mdi-weather-fog'}
+]
+
+// 风格偏好配置
+const styleOptions: Array<{value: StyleType; label: string; desc: string}> = [
+  {value: 'japanese', label: '日系小清新', desc: '柔和淡雅'},
+  {value: 'film', label: '胶片复古', desc: '怀旧质感'},
+  {value: 'blackwhite', label: '高对比黑白', desc: '经典永恒'},
+  {value: 'hk', label: '港风', desc: '浓郁色调'},
+  {value: 'minimal', label: '极简主义', desc: '简约纯粹'},
+  {value: 'cyberpunk', label: '赛博朋克', desc: '未来科技'},
+  {value: 'morandi', label: '莫兰迪色调', desc: '高级灰调'},
+  {value: 'painting', label: '油画质感', desc: '艺术氛围'},
+  {value: 'cinematic', label: '电影感', desc: '故事叙事'},
+  {value: 'ins', label: 'INS风', desc: '时尚潮流'}
+]
 
 export default function Consultant() {
   const {
@@ -10,14 +57,15 @@ export default function Consultant() {
     scene,
     customScene,
     lighting,
+    weather,
     style,
-    params,
     isGenerating,
     setLens,
     setFlash,
     setScene,
     setCustomScene,
     setLighting,
+    setWeather,
     setStyle,
     generateParams
   } = useCameraStore()
@@ -43,13 +91,10 @@ export default function Consultant() {
     <View className="min-h-screen bg-gradient-dark">
       <ScrollView scrollY className="h-screen scrollbar-hidden" style={{background: 'transparent'}}>
         <View className="px-4 py-6 pb-32">
-          {/* 返回按钮和标题 */}
-          <View className="mb-6">
-            <View className="flex flex-row items-center mb-4">
-              <View className="i-mdi-arrow-left text-2xl text-foreground mr-2" onClick={handleBack} />
-              <Text className="text-2xl font-bold text-foreground">AI 场景助手</Text>
-            </View>
-            <Text className="text-sm text-muted-foreground block">为您的 Canon R50 生成最佳拍摄参数</Text>
+          {/* 页面标题 */}
+          <View className="flex flex-row items-center mb-6">
+            <View className="i-mdi-arrow-left text-2xl text-foreground mr-2" onClick={handleBack} />
+            <Text className="text-2xl font-bold text-foreground">AI 参数咨询师</Text>
           </View>
 
           {/* 镜头选择 */}
@@ -59,18 +104,19 @@ export default function Consultant() {
               {(['55mm', '18-150mm', '100-400mm'] as LensType[]).map((lens) => (
                 <View
                   key={lens}
-                  className={`flex-1 rounded-xl p-4 border-2 transition-all ${
+                  className={`flex-1 rounded-xl p-4 border-2 ${
                     selectedLens === lens ? 'bg-primary/10 border-primary' : 'bg-card border-border'
                   }`}
                   onClick={() => setLens(lens)}>
-                  <View
-                    className={`i-mdi-camera-iris text-2xl mb-2 ${selectedLens === lens ? 'text-primary' : 'text-muted-foreground'}`}
-                  />
-                  <Text
-                    className={`text-sm font-medium block text-center ${selectedLens === lens ? 'text-primary' : 'text-foreground'}`}>
-                    {lens === '55mm' ? '定焦' : lens === '18-150mm' ? '变焦' : '长焦'}
-                  </Text>
-                  <Text className="text-xs text-muted-foreground block text-center mt-1">{lens}</Text>
+                  <View className="flex flex-col items-center gap-2">
+                    <View
+                      className={`i-mdi-camera-iris text-2xl ${selectedLens === lens ? 'text-primary' : 'text-muted-foreground'}`}
+                    />
+                    <Text
+                      className={`text-sm font-medium ${selectedLens === lens ? 'text-primary' : 'text-foreground'}`}>
+                      {lens}
+                    </Text>
+                  </View>
                 </View>
               ))}
             </View>
@@ -82,8 +128,8 @@ export default function Consultant() {
               <View className="flex flex-row items-center gap-3">
                 <View className={`i-mdi-flash text-2xl ${flashEnabled ? 'text-accent' : 'text-muted-foreground'}`} />
                 <View>
-                  <Text className="text-base font-semibold text-foreground block">神牛 TT685II 闪光灯</Text>
-                  <Text className="text-xs text-muted-foreground block mt-1">{flashEnabled ? '已启用' : '未启用'}</Text>
+                  <Text className="text-base font-semibold text-foreground block">神牛 TT685II</Text>
+                  <Text className="text-xs text-muted-foreground block">闪光灯控制</Text>
                 </View>
               </View>
               <Switch checked={flashEnabled} onChange={(e) => setFlash(e.detail.value)} color="#F57C00" />
@@ -93,38 +139,40 @@ export default function Consultant() {
           {/* 场景描述 */}
           <View className="mb-6">
             <Text className="text-base font-semibold text-foreground block mb-3">场景描述</Text>
-            <View className="grid grid-cols-2 gap-3 mb-3">
-              {[
-                {value: 'portrait-night' as SceneType, label: '夜景人像', icon: 'i-mdi-account-circle'},
-                {value: 'outdoor-sport' as SceneType, label: '户外运动', icon: 'i-mdi-run'},
-                {value: 'indoor-still' as SceneType, label: '室内静物', icon: 'i-mdi-flower'},
-                {value: 'custom' as SceneType, label: '自定义', icon: 'i-mdi-pencil'}
-              ].map((item) => (
-                <View
-                  key={item.value}
-                  className={`rounded-xl p-3 border-2 transition-all ${
-                    scene === item.value ? 'bg-primary/10 border-primary' : 'bg-card border-border'
-                  }`}
-                  onClick={() => setScene(item.value)}>
+            <ScrollView scrollX className="scrollbar-hidden" style={{whiteSpace: 'nowrap'}}>
+              <View className="flex flex-row gap-3" style={{display: 'inline-flex'}}>
+                {sceneOptions.map((option) => (
                   <View
-                    className={`${item.icon} text-xl mb-1 ${scene === item.value ? 'text-primary' : 'text-muted-foreground'}`}
-                  />
-                  <Text
-                    className={`text-sm font-medium block ${scene === item.value ? 'text-primary' : 'text-foreground'}`}>
-                    {item.label}
-                  </Text>
-                </View>
-              ))}
-            </View>
+                    key={option.value}
+                    className={`rounded-xl p-4 border-2 ${
+                      scene === option.value ? 'bg-primary/10 border-primary' : 'bg-card border-border'
+                    }`}
+                    style={{minWidth: '120px'}}
+                    onClick={() => setScene(option.value)}>
+                    <View className="flex flex-col items-center gap-2">
+                      <View
+                        className={`${option.icon} text-2xl ${scene === option.value ? 'text-primary' : 'text-muted-foreground'}`}
+                      />
+                      <Text
+                        className={`text-sm font-medium ${scene === option.value ? 'text-primary' : 'text-foreground'} break-keep`}>
+                        {option.label}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </ScrollView>
+
+            {/* 自定义场景输入 */}
             {scene === 'custom' && (
-              <View className="bg-input rounded-xl border border-border px-3 py-2">
+              <View className="mt-3 bg-input rounded-xl border border-border px-4 py-3">
                 <Input
                   className="w-full text-foreground text-sm"
-                  style={{padding: 0, border: 'none', background: 'transparent'}}
-                  placeholder="请描述您的拍摄场景..."
+                  placeholder="请描述拍摄场景，如：咖啡厅人像、城市夜景等"
                   placeholderClass="text-muted-foreground"
                   value={customScene}
                   onInput={(e) => setCustomScene(e.detail.value)}
+                  style={{padding: 0, border: 'none', background: 'transparent'}}
                 />
               </View>
             )}
@@ -133,54 +181,86 @@ export default function Consultant() {
           {/* 光线环境 */}
           <View className="mb-6">
             <Text className="text-base font-semibold text-foreground block mb-3">光线环境</Text>
-            <View className="grid grid-cols-4 gap-2">
-              {[
-                {value: 'dawn' as LightingType, label: '清晨', icon: 'i-mdi-weather-sunset-up'},
-                {value: 'noon' as LightingType, label: '正午', icon: 'i-mdi-white-balance-sunny'},
-                {value: 'golden' as LightingType, label: '黄金时刻', icon: 'i-mdi-weather-sunset'},
-                {value: 'night' as LightingType, label: '夜晚', icon: 'i-mdi-weather-night'}
-              ].map((item) => (
-                <View
-                  key={item.value}
-                  className={`rounded-lg p-3 border-2 transition-all ${
-                    lighting === item.value ? 'bg-primary/10 border-primary' : 'bg-card border-border'
-                  }`}
-                  onClick={() => setLighting(item.value)}>
+            <ScrollView scrollX className="scrollbar-hidden" style={{whiteSpace: 'nowrap'}}>
+              <View className="flex flex-row gap-3" style={{display: 'inline-flex'}}>
+                {lightingOptions.map((option) => (
                   <View
-                    className={`${item.icon} text-xl mb-1 ${lighting === item.value ? 'text-primary' : 'text-muted-foreground'}`}
-                  />
-                  <Text
-                    className={`text-xs font-medium block text-center ${lighting === item.value ? 'text-primary' : 'text-foreground'}`}>
-                    {item.label}
-                  </Text>
-                </View>
-              ))}
-            </View>
+                    key={option.value}
+                    className={`rounded-xl p-4 border-2 ${
+                      lighting === option.value ? 'bg-primary/10 border-primary' : 'bg-card border-border'
+                    }`}
+                    style={{minWidth: '100px'}}
+                    onClick={() => setLighting(option.value)}>
+                    <View className="flex flex-col items-center gap-2">
+                      <View
+                        className={`${option.icon} text-2xl ${lighting === option.value ? 'text-primary' : 'text-muted-foreground'}`}
+                      />
+                      <Text
+                        className={`text-sm font-medium ${lighting === option.value ? 'text-primary' : 'text-foreground'} break-keep`}>
+                        {option.label}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </ScrollView>
+          </View>
+
+          {/* 天气情况 */}
+          <View className="mb-6">
+            <Text className="text-base font-semibold text-foreground block mb-3">天气情况</Text>
+            <ScrollView scrollX className="scrollbar-hidden" style={{whiteSpace: 'nowrap'}}>
+              <View className="flex flex-row gap-3" style={{display: 'inline-flex'}}>
+                {weatherOptions.map((option) => (
+                  <View
+                    key={option.value}
+                    className={`rounded-xl p-4 border-2 ${
+                      weather === option.value ? 'bg-primary/10 border-primary' : 'bg-card border-border'
+                    }`}
+                    style={{minWidth: '100px'}}
+                    onClick={() => setWeather(option.value)}>
+                    <View className="flex flex-col items-center gap-2">
+                      <View
+                        className={`${option.icon} text-2xl ${weather === option.value ? 'text-primary' : 'text-muted-foreground'}`}
+                      />
+                      <Text
+                        className={`text-sm font-medium ${weather === option.value ? 'text-primary' : 'text-foreground'} break-keep`}>
+                        {option.label}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </ScrollView>
           </View>
 
           {/* 风格偏好 */}
           <View className="mb-6">
             <Text className="text-base font-semibold text-foreground block mb-3">风格偏好</Text>
-            <View className="flex flex-col gap-2">
-              {[
-                {value: 'japanese' as StyleType, label: '日系小清新', desc: '低对比度、柔和色调'},
-                {value: 'film' as StyleType, label: '胶片复古', desc: '颗粒感、低饱和度'},
-                {value: 'blackwhite' as StyleType, label: '高对比黑白', desc: '强烈明暗对比'}
-              ].map((item) => (
-                <View
-                  key={item.value}
-                  className={`rounded-xl p-4 border-2 transition-all ${
-                    style === item.value ? 'bg-primary/10 border-primary' : 'bg-card border-border'
-                  }`}
-                  onClick={() => setStyle(item.value)}>
-                  <Text
-                    className={`text-sm font-medium block mb-1 ${style === item.value ? 'text-primary' : 'text-foreground'}`}>
-                    {item.label}
-                  </Text>
-                  <Text className="text-xs text-muted-foreground block">{item.desc}</Text>
-                </View>
-              ))}
-            </View>
+            <ScrollView scrollX className="scrollbar-hidden" style={{whiteSpace: 'nowrap'}}>
+              <View className="flex flex-row gap-3" style={{display: 'inline-flex'}}>
+                {styleOptions.map((option) => (
+                  <View
+                    key={option.value}
+                    className={`rounded-xl p-4 border-2 ${
+                      style === option.value ? 'bg-primary/10 border-primary' : 'bg-card border-border'
+                    }`}
+                    style={{minWidth: '130px'}}
+                    onClick={() => setStyle(option.value)}>
+                    <View className="flex flex-col gap-2">
+                      <Text
+                        className={`text-sm font-semibold ${style === option.value ? 'text-primary' : 'text-foreground'} break-keep`}>
+                        {option.label}
+                      </Text>
+                      <Text
+                        className={`text-xs ${style === option.value ? 'text-primary/70' : 'text-muted-foreground'} break-keep`}>
+                        {option.desc}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </ScrollView>
           </View>
         </View>
 

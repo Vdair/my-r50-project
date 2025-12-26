@@ -41,6 +41,7 @@ const getSceneName = (scene: string, customScene?: string) => {
     'portrait-night': '夜景人像',
     'outdoor-sport': '户外运动',
     'indoor-still': '室内静物',
+    'outdoor-landscape': '户外风景',
     custom: customScene || '自定义'
   }
   return sceneMap[scene] || scene
@@ -57,12 +58,31 @@ const getLightingName = (lighting: string) => {
   return lightingMap[lighting] || lighting
 }
 
+// 获取天气名称
+const getWeatherName = (weather: string) => {
+  const weatherMap = {
+    sunny: '晴天',
+    cloudy: '多云',
+    overcast: '阴天',
+    rainy: '雨天',
+    foggy: '雾天'
+  }
+  return weatherMap[weather] || weather
+}
+
 // 获取风格名称
 const getStyleName = (style: string) => {
   const styleMap = {
     japanese: '日系小清新',
     film: '胶片复古',
-    blackwhite: '高对比黑白'
+    blackwhite: '高对比黑白',
+    hk: '港风',
+    minimal: '极简主义',
+    cyberpunk: '赛博朋克',
+    morandi: '莫兰迪色调',
+    painting: '油画质感',
+    cinematic: '电影感',
+    ins: 'INS风'
   }
   return styleMap[style] || style
 }
@@ -173,6 +193,9 @@ export default function History() {
                     </View>
                     <View className="bg-secondary rounded-lg px-3 py-1">
                       <Text className="text-xs text-foreground">{getLightingName(item.lighting)}</Text>
+                    </View>
+                    <View className="bg-secondary rounded-lg px-3 py-1">
+                      <Text className="text-xs text-foreground">{getWeatherName(item.weather)}</Text>
                     </View>
                     <View className="bg-secondary rounded-lg px-3 py-1">
                       <Text className="text-xs text-foreground">{getStyleName(item.style)}</Text>
