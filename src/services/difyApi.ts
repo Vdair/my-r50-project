@@ -104,7 +104,7 @@ const parseAIResponse = (response: string): CameraParams | null => {
   }
 }
 
-// 调用 Dify API 生成参数
+// 调用 Dify API 生成参数（不降级，直接抛出错误）
 export const generateParamsWithAI = async (
   lens: LensType,
   flash: boolean,
@@ -113,13 +113,26 @@ export const generateParamsWithAI = async (
   lighting: LightingType,
   weather: WeatherType,
   style: StyleType
-): Promise<CameraParams | null> => {
+): Promise<CameraParams> => {
+  // 检查 API 配置
+  if (!DIFY_API_URL || !DIFY_API_KEY) {
+    const error = 'Dify API 配置缺失：请检查 .env 文件中的 TARO_APP_DIFY_API_URL 和 TARO_APP_DIFY_API_KEY'
+    console.error('❌ 配置错误:', error)
+    throw new Error(error)
+  }
+
+  // 构建参数文本
+  const paramsText = buildParamsText(lens, flash, scene, customScene, lighting, weather, style)
+
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+  console.log('📤 发送 Dify API 请求')
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+  console.log('🔗 URL:', `${DIFY_API_URL}/chat-messages`)
+  console.log('🔑 API Key:', `${DIFY_API_KEY.substring(0, 20)}...`)
+  console.log('📝 参数文本:', paramsText)
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+
   try {
-    // 构建参数文本
-    const paramsText = buildParamsText(lens, flash, scene, customScene, lighting, weather, style)
-
-    console.log('发送 Dify API 请求，参数文本:', paramsText)
-
     // 调用 Dify API（使用 blocking 模式）
     const response = await Taro.request({
       url: `${DIFY_API_URL}/chat-messages`,
@@ -130,7 +143,7 @@ export const generateParamsWithAI = async (
       },
       data: {
         inputs: {},
-        query: paramsText, // 直接传递参数文本
+        query: paramsText,
         response_mode: 'blocking',
         conversation_id: '',
         user: 'r50-user'
@@ -138,34 +151,59 @@ export const generateParamsWithAI = async (
       timeout: 30000
     })
 
-    console.log('Dify API 响应状态:', response.statusCode)
-    console.log('Dify API 响应数据:', response.data)
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    console.log('📥 Dify API 响应')
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    console.log('📊 状态码:', response.statusCode)
+    console.log('📦 响应数据:', JSON.stringify(response.data, null, 2))
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 
+    // 检查响应状态码
     if (response.statusCode !== 200) {
-      console.error('Dify API 请求失败，状态码:', response.statusCode)
-      return null
+      const error = `Dify API 请求失败，HTTP 状态码: ${response.statusCode}`
+      console.error('❌ 请求失败:', error)
+      console.error('❌ 响应内容:', response.data)
+      throw new Error(error)
     }
 
+    // 检查响应数据
     const data = response.data as DifyResponse
-    if (!data.answer) {
-      console.error('Dify API 返回数据无效，缺少 answer 字段')
-      return null
+    if (!data || !data.answer) {
+      const error = 'Dify API 返回数据无效：缺少 answer 字段'
+      console.error('❌ 数据无效:', error)
+      console.error('❌ 实际返回:', data)
+      throw new Error(error)
     }
 
-    console.log('AI 返回内容:', data.answer)
+    console.log('✅ AI 返回内容:', data.answer)
 
     // 解析 AI 返回的参数
     const params = parseAIResponse(data.answer)
     if (!params) {
-      console.error('解析 AI 参数失败，将使用 Mock 数据')
-      return null
+      const error = 'AI 返回的 JSON 格式无效或参数不完整'
+      console.error('❌ 解析失败:', error)
+      console.error('❌ 原始内容:', data.answer)
+      throw new Error(error)
     }
 
-    console.log('AI 生成的参数:', params)
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    console.log('✅ AI 参数生成成功')
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    console.log('📸 生成的参数:', JSON.stringify(params, null, 2))
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+
     return params
-  } catch (error) {
-    console.error('调用 Dify API 异常:', error)
-    return null
+  } catch (error: any) {
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    console.error('❌ Dify API 调用异常')
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    console.error('❌ 错误类型:', error.constructor.name)
+    console.error('❌ 错误信息:', error.message)
+    console.error('❌ 错误详情:', error)
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+
+    // 重新抛出错误，让上层处理
+    throw error
   }
 }
 

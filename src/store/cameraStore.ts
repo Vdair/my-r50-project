@@ -1,5 +1,6 @@
+import Taro from '@tarojs/taro'
 import {create} from 'zustand'
-import {generateMockParams, generateParamsWithAI} from '@/services/difyApi'
+import {generateParamsWithAI} from '@/services/difyApi'
 
 // 镜头类型
 export type LensType = '55mm' | '18-150mm' | '100-400mm'
@@ -117,8 +118,20 @@ export const useCameraStore = create<CameraStore>((set, get) => ({
     const state = get()
 
     try {
-      // 首先尝试使用 Dify AI 生成参数
-      console.log('尝试使用 Dify AI 生成参数...')
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+      console.log('🚀 开始生成参数')
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+      console.log('📋 当前参数:')
+      console.log('  - 镜头:', state.selectedLens)
+      console.log('  - 闪光灯:', state.flashEnabled ? '开启' : '关闭')
+      console.log('  - 场景:', state.scene)
+      console.log('  - 自定义场景:', state.customScene || '无')
+      console.log('  - 光线:', state.lighting)
+      console.log('  - 天气:', state.weather)
+      console.log('  - 风格:', state.style)
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+
+      // 调用 Dify AI 生成参数（不降级，失败直接抛出错误）
       const aiParams = await generateParamsWithAI(
         state.selectedLens,
         state.flashEnabled,
@@ -129,39 +142,36 @@ export const useCameraStore = create<CameraStore>((set, get) => ({
         state.style
       )
 
-      if (aiParams) {
-        // AI 生成成功
-        console.log('AI 参数生成成功')
-        set({params: aiParams, isGenerating: false})
-        return
-      }
+      // 成功生成参数
+      set({params: aiParams, isGenerating: false})
 
-      // AI 生成失败，使用 Mock 数据作为降级方案
-      console.log('AI 生成失败，使用 Mock 数据')
-      const mockParams = generateMockParams(
-        state.selectedLens,
-        state.flashEnabled,
-        state.scene,
-        state.lighting,
-        state.weather,
-        state.style
-      )
+      // 显示成功提示
+      Taro.showToast({
+        title: '参数生成成功',
+        icon: 'success',
+        duration: 2000
+      })
+    } catch (error: any) {
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+      console.error('❌ 参数生成失败')
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+      console.error('❌ 错误信息:', error.message)
+      console.error('❌ 错误堆栈:', error.stack)
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 
-      set({params: mockParams, isGenerating: false})
-    } catch (error) {
-      console.error('参数生成失败:', error)
+      // 重置生成状态
+      set({isGenerating: false})
 
-      // 发生错误，使用 Mock 数据
-      const mockParams = generateMockParams(
-        state.selectedLens,
-        state.flashEnabled,
-        state.scene,
-        state.lighting,
-        state.weather,
-        state.style
-      )
+      // 显示详细错误信息
+      Taro.showModal({
+        title: 'Dify API 调用失败',
+        content: `错误信息：${error.message}\n\n请检查：\n1. 网络连接是否正常\n2. API 配置是否正确\n3. 查看控制台日志获取详细信息`,
+        showCancel: false,
+        confirmText: '我知道了'
+      })
 
-      set({params: mockParams, isGenerating: false})
+      // 重新抛出错误，便于外部监控
+      throw error
     }
   },
 
