@@ -200,8 +200,8 @@ export const useCameraStore = create<CameraStore>((set, get) => ({
   generateParams: async () => {
     set({isGenerating: true})
 
-    // 模拟 1.5 秒加载
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    // 模拟 1 秒加载
+    await new Promise((resolve) => setTimeout(resolve, 1000))
 
     const state = get()
     const params = generateMockParams(state.selectedLens, state.flashEnabled, state.scene, state.lighting, state.style)

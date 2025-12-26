@@ -1,24 +1,14 @@
 import {Button, ScrollView, Text, View} from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import {useEffect, useState} from 'react'
+import {useEffect} from 'react'
 import {type HistoryItem, useCameraStore} from '@/store/cameraStore'
 
 export default function Result() {
   const {params, selectedLens, flashEnabled, scene, customScene, lighting, style, addToHistory} = useCameraStore()
-  const [showAnimation, setShowAnimation] = useState(true)
-
-  useEffect(() => {
-    // 显示动画 0.5 秒后展示内容
-    const timer = setTimeout(() => {
-      setShowAnimation(false)
-    }, 500)
-
-    return () => clearTimeout(timer)
-  }, [])
 
   useEffect(() => {
     // 保存到历史记录
-    if (params && !showAnimation) {
+    if (params) {
       const historyItem: HistoryItem = {
         id: Date.now().toString(),
         timestamp: Date.now(),
@@ -32,7 +22,7 @@ export default function Result() {
       }
       addToHistory(historyItem)
     }
-  }, [params, showAnimation, addToHistory, customScene, flashEnabled, lighting, scene, selectedLens, style])
+  }, [params, addToHistory, customScene, flashEnabled, lighting, scene, selectedLens, style])
 
   const handleBack = () => {
     Taro.navigateBack()
@@ -52,20 +42,10 @@ export default function Result() {
 
   return (
     <View className="min-h-screen bg-gradient-dark">
-      {/* 入场动画 */}
-      {showAnimation && (
-        <View className="fixed inset-0 bg-background z-50 flex items-center justify-center">
-          <View className="flex flex-col items-center gap-4">
-            <View className="i-mdi-camera text-6xl text-primary animate-pulse" />
-            <Text className="text-lg text-foreground animate-pulse">参数生成完成</Text>
-          </View>
-        </View>
-      )}
-
       <ScrollView scrollY className="h-screen scrollbar-hidden" style={{background: 'transparent'}}>
         <View className="px-4 py-6 pb-32">
           {/* 标题区域 */}
-          <View className="mb-6">
+          <View className="mb-6 animate-fade-in">
             <View className="flex flex-row items-center justify-between mb-4">
               <View className="flex flex-row items-center">
                 <View className="i-mdi-arrow-left text-2xl text-foreground mr-2" onClick={handleBack} />
@@ -77,7 +57,9 @@ export default function Result() {
           </View>
 
           {/* 主要参数仪表盘 */}
-          <View className="bg-card rounded-2xl p-5 border border-border mb-4 animate-fade-in">
+          <View
+            className="bg-card rounded-2xl p-5 border border-border mb-4 animate-fade-in"
+            style={{animationDelay: '0.05s'}}>
             <Text className="text-base font-semibold text-foreground block mb-4">相机参数</Text>
             <View className="grid grid-cols-2 gap-4">
               <View className="bg-secondary rounded-xl p-4">
@@ -162,7 +144,7 @@ export default function Result() {
           {/* 操作建议 */}
           <View
             className="bg-secondary rounded-2xl p-5 border border-border mb-4 animate-fade-in"
-            style={{animationDelay: '0.2s'}}>
+            style={{animationDelay: '0.15s'}}>
             <View className="flex flex-row items-start gap-3">
               <View className="i-mdi-lightbulb-on text-2xl text-primary mt-0.5 flex-shrink-0" />
               <View className="flex-1">
@@ -173,7 +155,7 @@ export default function Result() {
           </View>
 
           {/* 底部按钮组 */}
-          <View className="flex flex-col gap-3 animate-fade-in" style={{animationDelay: '0.3s'}}>
+          <View className="flex flex-col gap-3 animate-fade-in" style={{animationDelay: '0.2s'}}>
             <Button
               className="w-full bg-gradient-primary text-white py-4 rounded-xl break-keep text-base font-semibold"
               size="default"
