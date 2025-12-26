@@ -14,8 +14,8 @@ interface DifyResponse {
   created_at: number
 }
 
-// 构建 AI Prompt
-const buildPrompt = (
+// 构建参数文本（简洁格式，直接传递给 Dify）
+const buildParamsText = (
   lens: LensType,
   flash: boolean,
   scene: SceneType,
@@ -64,40 +64,8 @@ const buildPrompt = (
     ins: 'INS风'
   }
 
-  return `你是一位专业的摄影参数顾问，专门为 Canon R50 相机和 Godox TT685II 闪光灯用户提供参数建议。
-
-拍摄条件：
-- 镜头：${lens}
-- 闪光灯：${flash ? '开启 Godox TT685II' : '关闭'}
-- 场景：${sceneNames[scene]}
-- 光线环境：${lightingNames[lighting]}
-- 天气情况：${weatherNames[weather]}
-- 风格偏好：${styleNames[style]}
-
-请根据以上条件，提供详细的拍摄参数建议。必须严格按照以下 JSON 格式返回，不要添加任何其他文字说明：
-
-{
-  "iso": 数字（ISO感光度，如 100, 400, 1600）,
-  "aperture": "字符串（光圈值，如 f/1.8, f/4.5）",
-  "shutterSpeed": "字符串（快门速度，如 1/125, 1/60）",
-  "whiteBalance": "字符串（白平衡，如 AWB, 5200K, 3200K）",
-  "sharpness": 数字（锐度，范围 0-7）,
-  "contrast": 数字（对比度，范围 -4 到 +4）,
-  "saturation": 数字（饱和度，范围 -4 到 +4）,
-  "tone": 数字（色调，范围 -4 到 +4）,
-  "flashMode": "字符串（闪光灯模式，如 TTL, M，仅在闪光灯开启时提供）",
-  "flashPower": "字符串（闪光灯功率，如 1/16, 1/32，仅在闪光灯开启时提供）",
-  "flashAngle": 数字（闪光灯角度，如 45, 60，仅在闪光灯开启时提供）,
-  "suggestion": "字符串（简短的操作建议，如：请使用 M 档，开启眼部对焦）"
-}
-
-注意事项：
-1. 必须严格返回 JSON 格式，不要添加任何解释文字
-2. 所有数值必须符合相机实际参数范围
-3. 根据天气情况调整 ISO（晴天降低，阴雨天提高）
-4. 根据风格调整锐度、对比度、饱和度、色调
-5. 闪光灯参数仅在闪光灯开启时提供
-6. 操作建议要简洁实用，不超过 30 字`
+  // 构建简洁的参数文本
+  return `镜头：${lens}，闪光灯：${flash ? '开启' : '关闭'}，场景：${sceneNames[scene]}，光线：${lightingNames[lighting]}，天气：${weatherNames[weather]}，风格：${styleNames[style]}`
 }
 
 // 解析 AI 返回的参数
@@ -147,10 +115,10 @@ export const generateParamsWithAI = async (
   style: StyleType
 ): Promise<CameraParams | null> => {
   try {
-    // 构建 prompt
-    const prompt = buildPrompt(lens, flash, scene, customScene, lighting, weather, style)
+    // 构建参数文本
+    const paramsText = buildParamsText(lens, flash, scene, customScene, lighting, weather, style)
 
-    console.log('发送 Dify API 请求...')
+    console.log('发送 Dify API 请求，参数文本:', paramsText)
 
     // 调用 Dify API（使用 blocking 模式）
     const response = await Taro.request({
@@ -162,38 +130,41 @@ export const generateParamsWithAI = async (
       },
       data: {
         inputs: {},
-        query: prompt,
-        response_mode: 'blocking', // 使用阻塞模式，更简单
+        query: paramsText, // 直接传递参数文本
+        response_mode: 'blocking',
         conversation_id: '',
         user: 'r50-user'
       },
-      timeout: 30000 // 30秒超时
+      timeout: 30000
     })
 
-    console.log('Dify API 响应:', response)
+    console.log('Dify API 响应状态:', response.statusCode)
+    console.log('Dify API 响应数据:', response.data)
 
     if (response.statusCode !== 200) {
-      console.error('Dify API 请求失败:', response.statusCode, response.data)
+      console.error('Dify API 请求失败，状态码:', response.statusCode)
       return null
     }
 
     const data = response.data as DifyResponse
     if (!data.answer) {
-      console.error('Dify API 返回数据无效:', data)
+      console.error('Dify API 返回数据无效，缺少 answer 字段')
       return null
     }
+
+    console.log('AI 返回内容:', data.answer)
 
     // 解析 AI 返回的参数
     const params = parseAIResponse(data.answer)
     if (!params) {
-      console.error('解析 AI 参数失败')
+      console.error('解析 AI 参数失败，将使用 Mock 数据')
       return null
     }
 
     console.log('AI 生成的参数:', params)
     return params
   } catch (error) {
-    console.error('调用 Dify API 失败:', error)
+    console.error('调用 Dify API 异常:', error)
     return null
   }
 }
