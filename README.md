@@ -1,54 +1,64 @@
-# Project Overview
+# R50 光影私教 (R50 Master)
 
-This repository is a Taro + React + TypeScript starter project for WeChat Mini-Programs and mobile H5, styled with Tailwind CSS and managed via pnpm.
-This document explains how to set up your local environment, develop, test, lint, and build the project.
+专门为佳能 Canon R50 相机和神牛 Godox TT685II 闪光灯用户设计的参数建议与知识库工具，帮助摄影爱好者快速获取拍摄参数建议和器材知识。
+
+## 功能特性
+
+### 1. AI 参数咨询师
+- **镜头选择**：支持 55mm 定焦、18-150mm 变焦、100-400mm 长焦
+- **闪光灯控制**：神牛 TT685II 开关及参数建议
+- **场景描述**：预设场景（夜景人像、户外运动、室内静物）+ 自定义场景
+- **光线环境**：清晨、正午、黄金时刻、夜晚
+- **风格偏好**：日系小清新、胶片复古、高对比黑白
+- **智能参数生成**：自动生成 ISO、光圈、快门速度、白平衡等完整参数建议
+
+### 2. 器材百科
+- **Canon R50 知识库**：A+ 场景智能、Tv 快门优先、Av 光圈优先、Servo 伺服对焦
+- **Godox TT685II 知识库**：TTL 自动测光、M 手动模式、HSS 高速同步、前/后帘同步
+- **手风琴交互**：点击展开查看详细说明
+
+## 设计特色
+
+- **深色专业风格**：#0f0f0f 深色哑光黑背景，体现摄影器材专业感
+- **佳能红主色**：#D32F2F 用于主按钮和核心强调
+- **神牛橙辅助色**：#F57C00 专门用于闪光灯相关元素
+- **等宽字体**：参数数字使用等宽字体，模拟相机屏幕效果
+- **渐变与阴影**：精心设计的渐变背景和阴影效果
+
+## 技术栈
+
+- **框架**：Taro + React + TypeScript
+- **样式**：Tailwind CSS
+- **状态管理**：Zustand
+- **图标**：Material Design Icons (MDI)
+
+## 项目结构
+
+```
+├── src/
+│   ├── app.config.ts               # 路由和底部导航配置
+│   ├── app.scss                    # 全局样式和配色系统
+│   ├── pages/
+│   │   ├── home/                   # AI 参数咨询师页面
+│   │   └── wiki/                   # 器材百科页面
+│   └── store/
+│       └── cameraStore.ts          # 相机参数状态管理
+```
+
+## 安装和使用
+
+```bash
+pnpm install # 安装依赖
+```
+
+```bash
+pnpm run lint  # 代码检查
+```
+
+## 开发说明
+
+本项目使用 Mock 数据模拟参数生成逻辑，无需后端服务。所有参数建议基于预设算法，根据用户选择的镜头、场景、光线和风格自动计算。
+
 ---
 
-## Repository Structure
-
-The project structure is as follows:
-
-```
-
-├── babel.config.js
-├── package.json
-├── pnpm-lock.yaml
-├── postcss.config.js
-├── project.config.json
-├── README.md
-├── tailwind.config.js
-├── tsconfig.check.json
-├── tsconfig.json
-├── config/
-│   ├── dev.ts
-│   ├── index.ts
-│   └── prod.ts
-├── scripts/
-├── src/
-│   ├── app.config.ts               # Taro app configuration, defining routes and tabBar, Please note that the "pages" must correctly correspond to the routes defined in src/pages.
-│   ├── app.scss
-│   ├── app.ts
-│   ├── index.html
-│   ├── client/
-│   │   └── supabase.ts             # Supabase client configuration, When you need to use Supabase, import and use it from this file.
-│   ├── db/                         # Database operations and Supabase integration, all database calls should be implemented here
-│   │   └── README.md
-│   ├── pages/                      # each folder corresponds to a route defined in app.config.ts
-│   ├── store/                      # Global state management using Zustand for cross-page state sharing
-│   │   └── README.md
-│   └── types/                      # TypeScript type definitions
-│       └── global.d.ts
-└── supabase/
-```
-
-After you generate any files or update the structure of this project, please update the README.md file to reflect the changes.
-
-## Installation and Setup
-
-```bash
-pnpm install # Install dependencies
-```
-
-```bash
-pnpm run lint  # Lint source (Important: After modifying the code, please execute this command to perform necessary checks.)
-```
+© 2025 R50 光影私教

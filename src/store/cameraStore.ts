@@ -1,0 +1,189 @@
+import {create} from 'zustand'
+
+// 镜头类型
+export type LensType = '55mm' | '18-150mm' | '100-400mm'
+
+// 光线环境
+export type LightingType = 'dawn' | 'noon' | 'golden' | 'night'
+
+// 风格偏好
+export type StyleType = 'japanese' | 'film' | 'blackwhite'
+
+// 场景类型
+export type SceneType = 'portrait-night' | 'outdoor-sport' | 'indoor-still' | 'custom'
+
+// 参数结果
+export interface CameraParams {
+  iso: number
+  aperture: string
+  shutterSpeed: string
+  whiteBalance: string
+  sharpness: number
+  contrast: number
+  saturation: number
+  tone: number
+  flashMode?: string
+  flashPower?: string
+  flashAngle?: number
+  suggestion: string
+}
+
+interface CameraStore {
+  // 输入参数
+  selectedLens: LensType
+  flashEnabled: boolean
+  scene: SceneType
+  customScene: string
+  lighting: LightingType
+  style: StyleType
+
+  // 结果
+  params: CameraParams | null
+  isGenerating: boolean
+
+  // Actions
+  setLens: (lens: LensType) => void
+  setFlash: (enabled: boolean) => void
+  setScene: (scene: SceneType) => void
+  setCustomScene: (scene: string) => void
+  setLighting: (lighting: LightingType) => void
+  setStyle: (style: StyleType) => void
+  generateParams: () => Promise<void>
+}
+
+// Mock 参数生成逻辑
+const generateMockParams = (
+  lens: LensType,
+  flash: boolean,
+  scene: SceneType,
+  lighting: LightingType,
+  style: StyleType
+): CameraParams => {
+  // 基础参数根据光线环境调整
+  let iso = 100
+  let aperture = 'f/2.8'
+  let shutterSpeed = '1/125'
+
+  // 根据光线环境调整
+  switch (lighting) {
+    case 'dawn':
+      iso = 400
+      shutterSpeed = '1/60'
+      break
+    case 'noon':
+      iso = 100
+      shutterSpeed = '1/250'
+      break
+    case 'golden':
+      iso = 200
+      shutterSpeed = '1/125'
+      break
+    case 'night':
+      iso = flash ? 400 : 1600
+      shutterSpeed = flash ? '1/60' : '1/30'
+      break
+  }
+
+  // 根据镜头调整光圈
+  switch (lens) {
+    case '55mm':
+      aperture = 'f/1.8'
+      break
+    case '18-150mm':
+      aperture = 'f/4.5'
+      break
+    case '100-400mm':
+      aperture = 'f/5.6'
+      break
+  }
+
+  // 根据风格调整参数
+  let sharpness = 4
+  let contrast = 0
+  let saturation = 0
+  let tone = 0
+
+  switch (style) {
+    case 'japanese':
+      sharpness = 2
+      contrast = -1
+      saturation = -1
+      tone = 1
+      break
+    case 'film':
+      sharpness = 3
+      contrast = 1
+      saturation = -2
+      tone = 0
+      break
+    case 'blackwhite':
+      sharpness = 5
+      contrast = 2
+      saturation = -4
+      tone = 0
+      break
+  }
+
+  // 白平衡
+  let whiteBalance = 'AWB'
+  if (lighting === 'golden') whiteBalance = '5200K'
+  if (lighting === 'night') whiteBalance = '3200K'
+
+  // 操作建议
+  let suggestion = '请使用 M 档，开启眼部对焦'
+  if (scene === 'outdoor-sport') suggestion = '建议使用 Tv 档，开启伺服对焦'
+  if (scene === 'indoor-still') suggestion = '建议使用 Av 档，使用三脚架稳定'
+
+  const result: CameraParams = {
+    iso,
+    aperture,
+    shutterSpeed,
+    whiteBalance,
+    sharpness,
+    contrast,
+    saturation,
+    tone,
+    suggestion
+  }
+
+  // 闪光灯参数
+  if (flash) {
+    result.flashMode = 'TTL'
+    result.flashPower = '1/16'
+    result.flashAngle = 45
+  }
+
+  return result
+}
+
+export const useCameraStore = create<CameraStore>((set, get) => ({
+  // 初始状态
+  selectedLens: '55mm',
+  flashEnabled: false,
+  scene: 'portrait-night',
+  customScene: '',
+  lighting: 'golden',
+  style: 'japanese',
+  params: null,
+  isGenerating: false,
+
+  // Actions
+  setLens: (lens) => set({selectedLens: lens}),
+  setFlash: (enabled) => set({flashEnabled: enabled}),
+  setScene: (scene) => set({scene}),
+  setCustomScene: (scene) => set({customScene: scene}),
+  setLighting: (lighting) => set({lighting}),
+  setStyle: (style) => set({style}),
+
+  generateParams: async () => {
+    set({isGenerating: true})
+
+    // 模拟 1.5 秒加载
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+
+    const state = get()
+    const params = generateMockParams(state.selectedLens, state.flashEnabled, state.scene, state.lighting, state.style)
+
+    set({params, isGenerating: false})
+  }
+}))
