@@ -13,6 +13,8 @@ export default defineAppConfig({
     backgroundTextStyle: 'dark',
     navigationBarBackgroundColor: '#0f0f0f',
     navigationBarTitleText: 'R50 光影私教',
-    navigationBarTextStyle: 'white'
+    navigationBarTextStyle: 'white',
+    backgroundColor: '#0f0f0f',
+    enablePullDownRefresh: false
   }
 })

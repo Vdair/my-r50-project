@@ -36,10 +36,21 @@
     --shadow-accent: 0 10px 30px -10px hsl(28 93% 48% / 0.3);
   }
   
-  /* 全局页面背景色 */
+  /* 全局页面背景色 - 强制设置 */
   page {
-    background-color: hsl(var(--background));
+    background-color: #0f0f0f !important;
     color: hsl(var(--foreground));
+  }
+  
+  /* 确保所有页面容器都有背景色 */
+  body {
+    background-color: #0f0f0f !important;
+  }
+  
+  /* 微信小程序页面容器 */
+  .taro_page,
+  .taro_router {
+    background-color: #0f0f0f !important;
   }
   
   /* 自定义滚动条样式 - 适用于 H5 */
