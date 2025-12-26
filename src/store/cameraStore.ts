@@ -28,6 +28,21 @@ export interface CameraParams {
   suggestion: string
 }
 
+// 历史记录项
+export interface HistoryItem {
+  id: string
+  timestamp: number
+  // 输入参数
+  lens: LensType
+  flash: boolean
+  scene: SceneType
+  customScene?: string
+  lighting: LightingType
+  style: StyleType
+  // 生成的参数
+  params: CameraParams
+}
+
 interface CameraStore {
   // 输入参数
   selectedLens: LensType
@@ -41,6 +56,9 @@ interface CameraStore {
   params: CameraParams | null
   isGenerating: boolean
 
+  // 历史记录
+  history: HistoryItem[]
+
   // Actions
   setLens: (lens: LensType) => void
   setFlash: (enabled: boolean) => void
@@ -49,6 +67,9 @@ interface CameraStore {
   setLighting: (lighting: LightingType) => void
   setStyle: (style: StyleType) => void
   generateParams: () => Promise<void>
+  addToHistory: (item: HistoryItem) => void
+  deleteHistoryItem: (id: string) => void
+  clearHistory: () => void
 }
 
 // Mock 参数生成逻辑
@@ -166,6 +187,7 @@ export const useCameraStore = create<CameraStore>((set, get) => ({
   style: 'japanese',
   params: null,
   isGenerating: false,
+  history: [],
 
   // Actions
   setLens: (lens) => set({selectedLens: lens}),
@@ -185,5 +207,17 @@ export const useCameraStore = create<CameraStore>((set, get) => ({
     const params = generateMockParams(state.selectedLens, state.flashEnabled, state.scene, state.lighting, state.style)
 
     set({params, isGenerating: false})
-  }
+  },
+
+  addToHistory: (item) =>
+    set((state) => ({
+      history: [item, ...state.history]
+    })),
+
+  deleteHistoryItem: (id) =>
+    set((state) => ({
+      history: state.history.filter((item) => item.id !== id)
+    })),
+
+  clearHistory: () => set({history: []})
 }))

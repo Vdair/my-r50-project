@@ -27,8 +27,12 @@ export default function Consultant() {
       showToast({title: '请输入场景描述', icon: 'none'})
       return
     }
+
+    // 开始生成参数
     await generateParams()
-    showToast({title: '参数生成成功', icon: 'success'})
+
+    // 跳转到结果页面
+    Taro.navigateTo({url: '/pages/result/index'})
   }, [scene, customScene, generateParams])
 
   const handleBack = () => {
@@ -178,108 +182,6 @@ export default function Consultant() {
               ))}
             </View>
           </View>
-
-          {/* 参数结果展示 */}
-          {params && !isGenerating && (
-            <View className="mb-6">
-              <Text className="text-base font-semibold text-foreground block mb-3">参数建议</Text>
-
-              {/* 主要参数仪表盘 */}
-              <View className="bg-card rounded-xl p-4 border border-border mb-3">
-                <View className="grid grid-cols-2 gap-4">
-                  <View>
-                    <Text className="text-xs text-muted-foreground block mb-1">ISO</Text>
-                    <Text className="text-2xl font-mono-param font-bold text-primary block">{params.iso}</Text>
-                  </View>
-                  <View>
-                    <Text className="text-xs text-muted-foreground block mb-1">光圈</Text>
-                    <Text className="text-2xl font-mono-param font-bold text-primary block">{params.aperture}</Text>
-                  </View>
-                  <View>
-                    <Text className="text-xs text-muted-foreground block mb-1">快门速度</Text>
-                    <Text className="text-2xl font-mono-param font-bold text-primary block">{params.shutterSpeed}</Text>
-                  </View>
-                  <View>
-                    <Text className="text-xs text-muted-foreground block mb-1">白平衡</Text>
-                    <Text className="text-2xl font-mono-param font-bold text-primary block">{params.whiteBalance}</Text>
-                  </View>
-                </View>
-
-                <View className="h-px bg-border my-4" />
-
-                <View className="grid grid-cols-4 gap-3">
-                  <View>
-                    <Text className="text-xs text-muted-foreground block mb-1">锐度</Text>
-                    <Text className="text-lg font-mono-param font-semibold text-foreground block">
-                      {params.sharpness}
-                    </Text>
-                  </View>
-                  <View>
-                    <Text className="text-xs text-muted-foreground block mb-1">反差</Text>
-                    <Text className="text-lg font-mono-param font-semibold text-foreground block">
-                      {params.contrast > 0 ? '+' : ''}
-                      {params.contrast}
-                    </Text>
-                  </View>
-                  <View>
-                    <Text className="text-xs text-muted-foreground block mb-1">饱和度</Text>
-                    <Text className="text-lg font-mono-param font-semibold text-foreground block">
-                      {params.saturation > 0 ? '+' : ''}
-                      {params.saturation}
-                    </Text>
-                  </View>
-                  <View>
-                    <Text className="text-xs text-muted-foreground block mb-1">色调</Text>
-                    <Text className="text-lg font-mono-param font-semibold text-foreground block">
-                      {params.tone > 0 ? '+' : ''}
-                      {params.tone}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-
-              {/* 闪光灯参数卡片 */}
-              {flashEnabled && params.flashMode && (
-                <View className="bg-gradient-accent rounded-xl p-4 mb-3">
-                  <View className="flex flex-row items-center gap-2 mb-3">
-                    <View className="i-mdi-flash text-xl text-accent-foreground" />
-                    <Text className="text-base font-semibold text-accent-foreground block">闪光灯参数</Text>
-                  </View>
-                  <View className="grid grid-cols-3 gap-4">
-                    <View>
-                      <Text className="text-xs text-accent-foreground/70 block mb-1">模式</Text>
-                      <Text className="text-lg font-mono-param font-bold text-accent-foreground block">
-                        {params.flashMode}
-                      </Text>
-                    </View>
-                    <View>
-                      <Text className="text-xs text-accent-foreground/70 block mb-1">功率</Text>
-                      <Text className="text-lg font-mono-param font-bold text-accent-foreground block">
-                        {params.flashPower}
-                      </Text>
-                    </View>
-                    <View>
-                      <Text className="text-xs text-accent-foreground/70 block mb-1">灯头角度</Text>
-                      <Text className="text-lg font-mono-param font-bold text-accent-foreground block">
-                        {params.flashAngle}°
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              )}
-
-              {/* 操作建议 */}
-              <View className="bg-secondary rounded-xl p-4 border border-border">
-                <View className="flex flex-row items-start gap-2">
-                  <View className="i-mdi-lightbulb-on text-lg text-primary mt-0.5" />
-                  <View className="flex-1">
-                    <Text className="text-xs text-muted-foreground block mb-1">操作建议</Text>
-                    <Text className="text-sm text-foreground block leading-relaxed">{params.suggestion}</Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-          )}
         </View>
 
         {/* 底部固定按钮 */}
@@ -296,6 +198,42 @@ export default function Consultant() {
           </Button>
         </View>
       </ScrollView>
+
+      {/* 加载动画遮罩 */}
+      {isGenerating && (
+        <View className="fixed inset-0 bg-background/95 z-50 flex items-center justify-center">
+          <View className="flex flex-col items-center gap-6">
+            {/* 相机图标动画 */}
+            <View className="relative">
+              <View className="i-mdi-camera text-8xl text-primary animate-pulse" />
+              <View className="absolute inset-0 i-mdi-camera text-8xl text-primary/30 animate-ping" />
+            </View>
+
+            {/* 进度文字 */}
+            <View className="flex flex-col items-center gap-2">
+              <Text className="text-xl font-semibold text-foreground animate-pulse">正在分析光影</Text>
+              <Text className="text-sm text-muted-foreground">AI 正在为您生成最佳参数...</Text>
+            </View>
+
+            {/* 装饰性图标 */}
+            <View className="flex flex-row items-center gap-4 mt-4">
+              <View
+                className="i-mdi-camera-iris text-2xl text-primary/50 animate-bounce"
+                style={{animationDelay: '0s'}}
+              />
+              <View className="i-mdi-flash text-2xl text-accent/50 animate-bounce" style={{animationDelay: '0.2s'}} />
+              <View
+                className="i-mdi-white-balance-sunny text-2xl text-primary/50 animate-bounce"
+                style={{animationDelay: '0.4s'}}
+              />
+              <View
+                className="i-mdi-aperture text-2xl text-accent/50 animate-bounce"
+                style={{animationDelay: '0.6s'}}
+              />
+            </View>
+          </View>
+        </View>
+      )}
     </View>
   )
 }

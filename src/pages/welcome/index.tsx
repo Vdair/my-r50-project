@@ -10,12 +10,23 @@ export default function Welcome() {
     Taro.navigateTo({url: '/pages/wiki/index'})
   }
 
+  const navigateToHistory = () => {
+    Taro.navigateTo({url: '/pages/history/index'})
+  }
+
   return (
     <View className="min-h-screen bg-gradient-dark flex flex-col">
       {/* 顶部标题区域 */}
       <View className="px-6 pt-12 pb-8">
-        <View className="flex flex-row items-center justify-center mb-3">
+        <View className="flex flex-row items-center justify-between mb-3">
+          <View className="flex-1" />
           <View className="i-mdi-camera text-4xl text-primary" />
+          <View className="flex-1 flex flex-row justify-end">
+            <View
+              className="i-mdi-history text-2xl text-muted-foreground active:text-primary transition-colors"
+              onClick={navigateToHistory}
+            />
+          </View>
         </View>
         <Text className="text-3xl font-bold text-center text-foreground block mb-2">R50 光影私教</Text>
         <Text className="text-sm text-center text-muted-foreground block">Canon R50 × Godox TT685II 专业参数助手</Text>
