@@ -1,9 +1,15 @@
 import Taro from '@tarojs/taro'
 import type {CameraParams, LensType, LightingType, SceneType, StyleType, WeatherType} from '@/store/cameraStore'
 
-// Dify API 配置
-const DIFY_API_URL = process.env.TARO_APP_DIFY_API_URL || ''
-const DIFY_API_KEY = process.env.TARO_APP_DIFY_API_KEY || ''
+// Dify API 配置（支持 H5 和小程序环境）
+const DIFY_API_URL =
+  (typeof process !== 'undefined' && process.env?.TARO_APP_DIFY_API_URL) ||
+  (typeof import.meta !== 'undefined' && import.meta.env?.TARO_APP_DIFY_API_URL) ||
+  ''
+const DIFY_API_KEY =
+  (typeof process !== 'undefined' && process.env?.TARO_APP_DIFY_API_KEY) ||
+  (typeof import.meta !== 'undefined' && import.meta.env?.TARO_APP_DIFY_API_KEY) ||
+  ''
 
 // Dify API 响应类型
 interface DifyResponse {
