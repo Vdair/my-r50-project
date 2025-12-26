@@ -120,9 +120,41 @@ export const generateParamsWithAI = async (
   weather: WeatherType,
   style: StyleType
 ): Promise<CameraParams> => {
+  // 调试日志：查看环境变量
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+  console.log('🔍 环境变量调试信息')
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+  console.log('运行环境:', typeof import.meta !== 'undefined' ? 'H5 (Vite)' : '小程序')
+  console.log('typeof process:', typeof process)
+  console.log('typeof import.meta:', typeof import.meta)
+  console.log('DIFY_API_URL:', DIFY_API_URL || '(未设置)')
+  console.log('DIFY_API_KEY:', DIFY_API_KEY ? '已设置' : '(未设置)')
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+
   // 检查 API 配置
   if (!DIFY_API_URL || !DIFY_API_KEY) {
-    const error = 'Dify API 配置缺失：请检查 .env 文件中的 TARO_APP_DIFY_API_URL 和 TARO_APP_DIFY_API_KEY'
+    const error = `Dify API 配置缺失
+
+【当前环境】
+- 运行环境: ${typeof import.meta !== 'undefined' ? 'H5 (Vite)' : '小程序'}
+- DIFY_API_URL: ${DIFY_API_URL || '(未设置)'}
+- DIFY_API_KEY: ${DIFY_API_KEY ? '已设置' : '(未设置)'}
+
+【排查步骤】
+1. 确认 .env 文件存在于项目根目录
+2. 确认 .env 文件包含以下配置：
+   TARO_APP_DIFY_API_URL=https://difyonline.58corp.com/v1
+   TARO_APP_DIFY_API_KEY=app-jGTNEtyl3MUvqJexDXmKlfK7
+3. 重启开发服务器（必须！）：
+   - 停止当前服务器（Ctrl+C）
+   - 重新运行：npm run dev:h5
+4. 刷新浏览器页面
+5. 查看控制台的"环境变量调试信息"
+
+【注意事项】
+- H5 环境需要在 config/dev.ts 中配置 envPrefix
+- 修改 .env 文件后必须重启服务器才能生效`
+
     console.error('❌ 配置错误:', error)
     throw new Error(error)
   }
