@@ -44,6 +44,15 @@ export default defineConfig<'vite'>(async (merge) => {
         miaodaDevPlugin({appType: 'miniapp', cdnBase: publicPath}),
 
         {
+          name: 'env-prefix-config',
+          config() {
+            return {
+              envPrefix: ['VITE_', 'TARO_APP_']
+            }
+          }
+        },
+
+        {
           name: 'hmr-toggle',
           configureServer(server) {
             let hmrEnabled = true

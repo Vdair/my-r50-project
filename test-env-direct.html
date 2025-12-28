@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>环境变量直接测试</title>
+  <meta charset="UTF-8">
+</head>
+<body>
+  <h1>环境变量直接测试</h1>
+  <div id="result"></div>
+  
+  <script type="module">
+    // 直接访问环境变量（模拟 cozeApi.ts 中的代码）
+    const VITE_COZE_API_URL = import.meta.env.VITE_COZE_API_URL
+    const TARO_APP_COZE_API_URL = import.meta.env.TARO_APP_COZE_API_URL
+    const VITE_COZE_API_TOKEN = import.meta.env.VITE_COZE_API_TOKEN
+    const TARO_APP_COZE_API_TOKEN = import.meta.env.TARO_APP_COZE_API_TOKEN
+    
+    // 模拟 getCozeApiUrl 函数
+    const getCozeApiUrl = () => {
+      return VITE_COZE_API_URL || TARO_APP_COZE_API_URL || ''
+    }
+    
+    // 模拟 getCozeApiToken 函数
+    const getCozeApiToken = () => {
+      return VITE_COZE_API_TOKEN || TARO_APP_COZE_API_TOKEN || ''
+    }
+    
+    const result = document.getElementById('result')
+    result.innerHTML = `
+      <h2>直接访问结果：</h2>
+      <pre>
+VITE_COZE_API_URL: ${VITE_COZE_API_URL || '(未设置)'}
+TARO_APP_COZE_API_URL: ${TARO_APP_COZE_API_URL || '(未设置)'}
+VITE_COZE_API_TOKEN: ${VITE_COZE_API_TOKEN ? '已设置 (' + VITE_COZE_API_TOKEN.substring(0, 30) + '...)' : '(未设置)'}
+TARO_APP_COZE_API_TOKEN: ${TARO_APP_COZE_API_TOKEN ? '已设置 (' + TARO_APP_COZE_API_TOKEN.substring(0, 30) + '...)' : '(未设置)'}
+
+getCozeApiUrl(): ${getCozeApiUrl() || '(未设置)'}
+getCozeApiToken(): ${getCozeApiToken() ? '已设置 (' + getCozeApiToken().substring(0, 30) + '...)' : '(未设置)'}
+
+import.meta.env 对象：
+${JSON.stringify(import.meta.env, null, 2)}
+      </pre>
+    `
+    
+    console.log('VITE_COZE_API_URL:', VITE_COZE_API_URL)
+    console.log('TARO_APP_COZE_API_URL:', TARO_APP_COZE_API_URL)
+    console.log('VITE_COZE_API_TOKEN:', VITE_COZE_API_TOKEN ? '已设置' : '(未设置)')
+    console.log('TARO_APP_COZE_API_TOKEN:', TARO_APP_COZE_API_TOKEN ? '已设置' : '(未设置)')
+    console.log('getCozeApiUrl():', getCozeApiUrl())
+    console.log('getCozeApiToken():', getCozeApiToken() ? '已设置' : '(未设置)')
+    console.log('import.meta.env:', import.meta.env)
+  </script>
+</body>
+</html>
