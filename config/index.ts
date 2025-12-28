@@ -44,10 +44,35 @@ export default defineConfig<'vite'>(async (merge) => {
         miaodaDevPlugin({appType: 'miniapp', cdnBase: publicPath}),
 
         {
-          name: 'env-prefix-config',
+          name: 'env-inject-plugin',
           config() {
+            // 从 .env 文件读取环境变量并注入到编译时常量
+            // 这样可以确保环境变量在编译时被正确替换
+            const cozeApiUrl = process.env.VITE_COZE_API_URL || process.env.TARO_APP_COZE_API_URL || ''
+            const cozeApiToken = process.env.VITE_COZE_API_TOKEN || process.env.TARO_APP_COZE_API_TOKEN || ''
+
+            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+            console.log('🔧 Vite 编译时环境变量注入')
+            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+            console.log('VITE_COZE_API_URL:', process.env.VITE_COZE_API_URL ? '✅ 已设置' : '❌ 未设置')
+            console.log('TARO_APP_COZE_API_URL:', process.env.TARO_APP_COZE_API_URL ? '✅ 已设置' : '❌ 未设置')
+            console.log('VITE_COZE_API_TOKEN:', process.env.VITE_COZE_API_TOKEN ? '✅ 已设置' : '❌ 未设置')
+            console.log('TARO_APP_COZE_API_TOKEN:', process.env.TARO_APP_COZE_API_TOKEN ? '✅ 已设置' : '❌ 未设置')
+            console.log('最终使用的 URL:', cozeApiUrl || '(未设置)')
+            console.log('最终使用的 Token:', cozeApiToken ? `已设置 (${cozeApiToken.substring(0, 30)}...)` : '(未设置)')
+            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+
             return {
-              envPrefix: ['VITE_', 'TARO_APP_']
+              // 设置 envPrefix 以支持读取环境变量
+              envPrefix: ['VITE_', 'TARO_APP_'],
+              // 使用 define 配置直接注入环境变量值
+              // 这样可以确保在编译时将环境变量替换为实际值
+              define: {
+                'import.meta.env.VITE_COZE_API_URL': JSON.stringify(cozeApiUrl),
+                'import.meta.env.TARO_APP_COZE_API_URL': JSON.stringify(cozeApiUrl),
+                'import.meta.env.VITE_COZE_API_TOKEN': JSON.stringify(cozeApiToken),
+                'import.meta.env.TARO_APP_COZE_API_TOKEN': JSON.stringify(cozeApiToken)
+              }
             }
           }
         },
