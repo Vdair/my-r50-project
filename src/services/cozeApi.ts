@@ -192,6 +192,8 @@ const parseCozeResponse = (data: CozeResponse): CameraParams | null => {
     }
 
     const optimized = data.optimized_params
+    const sceneAnalysis = optimized.scene_analysis
+    const lensRecommendation = optimized.lens_recommendation
     const cameraSettings = optimized.camera_settings_r50
     const pictureStyle = optimized.picture_style_settings
     const flash = optimized.flash_godox_tt685ii
@@ -204,22 +206,44 @@ const parseCozeResponse = (data: CozeResponse): CameraParams | null => {
 
     // 构建 CameraParams 对象
     const params: CameraParams = {
+      // 场景分析
+      sceneAnalysis: sceneAnalysis
+        ? {
+            summary: sceneAnalysis.summary || '',
+            difficultyLevel: sceneAnalysis.difficulty_level || ''
+          }
+        : undefined,
+      // 镜头推荐
+      lensRecommendation: lensRecommendation
+        ? {
+            focalLength: lensRecommendation.focal_length || '',
+            reason: lensRecommendation.reason || ''
+          }
+        : undefined,
+      // 相机设置
+      shootingMode: cameraSettings.shooting_mode || 'M',
       iso: cameraSettings.iso || 400,
       aperture: cameraSettings.aperture || 'f/2.8',
       shutterSpeed: cameraSettings.shutter_speed || '1/125',
+      exposureCompensation: cameraSettings.exposure_compensation || '0',
       whiteBalance: cameraSettings.white_balance?.mode_or_kelvin || '5200K',
+      whiteBalanceShift: cameraSettings.white_balance?.shift || '',
+      // 照片风格设置
+      styleName: pictureStyle?.style_name || 'User Def 1',
       sharpness: pictureStyle?.sharpness ?? 0,
       contrast: pictureStyle?.contrast ?? 0,
       saturation: pictureStyle?.saturation ?? 0,
       tone: pictureStyle?.color_tone ?? 0,
+      // 闪光灯设置
+      flashEnable: flash?.enable ?? false,
+      flashMode: flash?.mode || '',
+      flashHssSync: flash?.hss_sync ?? false,
+      flashPower: flash?.power_or_comp || '',
+      flashZoom: flash?.zoom || '',
+      flashAngle: flash?.head_angle || '',
+      flashDiffuserAdvice: flash?.diffuser_advice || '',
+      // 专家建议
       suggestion: optimized.expert_advice || '请根据实际情况调整参数'
-    }
-
-    // 如果有闪光灯参数，添加到结果中
-    if (flash?.enable) {
-      params.flashMode = flash.mode || 'TTL'
-      params.flashPower = flash.power_or_comp || 'TTL'
-      params.flashAngle = flash.head_angle ? parseFlashAngle(flash.head_angle) : 0
     }
 
     console.log('✅ 成功解析扣子 API 响应')
@@ -233,10 +257,10 @@ const parseCozeResponse = (data: CozeResponse): CameraParams | null => {
 }
 
 /**
- * 解析闪光灯角度字符串
+ * 解析闪光灯角度字符串（已废弃，保留用于兼容性）
  * 例如: "Up 45 deg + Bounce to Ceiling" -> 45
  */
-const parseFlashAngle = (angleStr: string): number => {
+const _parseFlashAngle = (angleStr: string): number => {
   const match = angleStr.match(/(\d+)\s*deg/i)
   return match ? Number.parseInt(match[1], 10) : 0
 }

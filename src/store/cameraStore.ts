@@ -30,17 +30,39 @@ export type SceneType = 'portrait-night' | 'outdoor-sport' | 'indoor-still' | 'o
 
 // 参数结果
 export interface CameraParams {
+  // 场景分析
+  sceneAnalysis?: {
+    summary: string
+    difficultyLevel: string
+  }
+  // 镜头推荐
+  lensRecommendation?: {
+    focalLength: string
+    reason: string
+  }
+  // 相机设置
+  shootingMode?: string
   iso: number
   aperture: string
   shutterSpeed: string
+  exposureCompensation?: string
   whiteBalance: string
+  whiteBalanceShift?: string
+  // 照片风格设置
+  styleName?: string
   sharpness: number
   contrast: number
   saturation: number
   tone: number
+  // 闪光灯设置
+  flashEnable?: boolean
   flashMode?: string
+  flashHssSync?: boolean
   flashPower?: string
-  flashAngle?: number
+  flashZoom?: string
+  flashAngle?: string
+  flashDiffuserAdvice?: string
+  // 专家建议
   suggestion: string
 }
 

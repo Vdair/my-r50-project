@@ -58,12 +58,84 @@ export default function Result() {
             <Text className="text-sm text-muted-foreground block">根据您的设置生成的最佳参数</Text>
           </View>
 
-          {/* 主要参数仪表盘 */}
+          {/* 场景分析 */}
+          {params.sceneAnalysis && (
+            <View
+              className="bg-card rounded-2xl p-5 border border-border mb-4 animate-fade-in"
+              style={{animationDelay: '0.05s'}}>
+              <View className="flex flex-row items-center mb-3">
+                <View className="i-mdi-image-filter-hdr text-xl text-primary mr-2" />
+                <Text className="text-base font-semibold text-foreground">场景分析</Text>
+              </View>
+              <Text className="text-sm text-foreground leading-relaxed block mb-2">{params.sceneAnalysis.summary}</Text>
+              <View className="flex flex-row items-center mt-2">
+                <Text className="text-xs text-muted-foreground mr-2">难度等级：</Text>
+                <View
+                  className={`px-2 py-1 rounded ${
+                    params.sceneAnalysis.difficultyLevel === 'Easy'
+                      ? 'bg-green-500/20'
+                      : params.sceneAnalysis.difficultyLevel === 'Medium'
+                        ? 'bg-yellow-500/20'
+                        : 'bg-red-500/20'
+                  }`}>
+                  <Text
+                    className={`text-xs ${
+                      params.sceneAnalysis.difficultyLevel === 'Easy'
+                        ? 'text-green-400'
+                        : params.sceneAnalysis.difficultyLevel === 'Medium'
+                          ? 'text-yellow-400'
+                          : 'text-red-400'
+                    }`}>
+                    {params.sceneAnalysis.difficultyLevel === 'Easy'
+                      ? '简单'
+                      : params.sceneAnalysis.difficultyLevel === 'Medium'
+                        ? '中等'
+                        : '困难'}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          )}
+
+          {/* 镜头推荐 */}
+          {params.lensRecommendation && (
+            <View
+              className="bg-card rounded-2xl p-5 border border-border mb-4 animate-fade-in"
+              style={{animationDelay: '0.1s'}}>
+              <View className="flex flex-row items-center mb-3">
+                <View className="i-mdi-camera-iris text-xl text-primary mr-2" />
+                <Text className="text-base font-semibold text-foreground">镜头推荐</Text>
+              </View>
+              <View className="bg-secondary rounded-xl p-3 mb-2">
+                <Text className="text-lg font-bold text-primary block">{params.lensRecommendation.focalLength}</Text>
+              </View>
+              <Text className="text-sm text-muted-foreground leading-relaxed block">
+                {params.lensRecommendation.reason}
+              </Text>
+            </View>
+          )}
+
+          {/* 相机设置 */}
           <View
             className="bg-card rounded-2xl p-5 border border-border mb-4 animate-fade-in"
-            style={{animationDelay: '0.05s'}}>
-            <Text className="text-base font-semibold text-foreground block mb-4">相机参数</Text>
-            <View className="grid grid-cols-2 gap-4">
+            style={{animationDelay: '0.15s'}}>
+            <View className="flex flex-row items-center mb-4">
+              <View className="i-mdi-camera text-xl text-primary mr-2" />
+              <Text className="text-base font-semibold text-foreground">相机设置</Text>
+            </View>
+
+            {/* 拍摄模式 */}
+            {params.shootingMode && (
+              <View className="mb-4">
+                <Text className="text-xs text-muted-foreground block mb-2">拍摄模式</Text>
+                <View className="bg-secondary rounded-xl p-3">
+                  <Text className="text-2xl font-mono-param font-bold text-primary block">{params.shootingMode}</Text>
+                </View>
+              </View>
+            )}
+
+            {/* 主要参数 */}
+            <View className="grid grid-cols-2 gap-4 mb-4">
               <View className="bg-secondary rounded-xl p-4">
                 <Text className="text-xs text-muted-foreground block mb-2">ISO 感光度</Text>
                 <Text className="text-3xl font-mono-param font-bold text-primary block">{params.iso}</Text>
@@ -77,12 +149,38 @@ export default function Result() {
                 <Text className="text-3xl font-mono-param font-bold text-primary block">{params.shutterSpeed}</Text>
               </View>
               <View className="bg-secondary rounded-xl p-4">
-                <Text className="text-xs text-muted-foreground block mb-2">白平衡</Text>
-                <Text className="text-3xl font-mono-param font-bold text-primary block">{params.whiteBalance}</Text>
+                <Text className="text-xs text-muted-foreground block mb-2">曝光补偿</Text>
+                <Text className="text-3xl font-mono-param font-bold text-primary block">
+                  {params.exposureCompensation}
+                </Text>
               </View>
             </View>
 
-            <View className="h-px bg-border my-4" />
+            {/* 白平衡 */}
+            <View className="bg-secondary rounded-xl p-4">
+              <Text className="text-xs text-muted-foreground block mb-2">白平衡</Text>
+              <Text className="text-2xl font-mono-param font-bold text-primary block">{params.whiteBalance}</Text>
+              {params.whiteBalanceShift && (
+                <Text className="text-sm text-muted-foreground block mt-1">偏移：{params.whiteBalanceShift}</Text>
+              )}
+            </View>
+          </View>
+
+          {/* 照片风格设置 */}
+          <View
+            className="bg-card rounded-2xl p-5 border border-border mb-4 animate-fade-in"
+            style={{animationDelay: '0.2s'}}>
+            <View className="flex flex-row items-center mb-4">
+              <View className="i-mdi-palette text-xl text-primary mr-2" />
+              <Text className="text-base font-semibold text-foreground">照片风格</Text>
+            </View>
+
+            {params.styleName && (
+              <View className="bg-secondary rounded-xl p-3 mb-4">
+                <Text className="text-sm text-muted-foreground block mb-1">风格名称</Text>
+                <Text className="text-lg font-bold text-primary block">{params.styleName}</Text>
+              </View>
+            )}
 
             <View className="grid grid-cols-4 gap-3">
               <View className="text-center">
@@ -113,62 +211,85 @@ export default function Result() {
             </View>
           </View>
 
-          {/* 闪光灯参数卡片 */}
-          {flashEnabled && params.flashMode && (
-            <View className="bg-gradient-accent rounded-2xl p-5 mb-4 animate-fade-in" style={{animationDelay: '0.1s'}}>
-              <View className="flex flex-row items-center gap-2 mb-4">
-                <View className="i-mdi-flash text-2xl text-accent-foreground" />
-                <Text className="text-base font-semibold text-accent-foreground block">闪光灯参数</Text>
+          {/* 闪光灯设置 */}
+          {params.flashEnable && (
+            <View
+              className="bg-card rounded-2xl p-5 border border-border mb-4 animate-fade-in"
+              style={{animationDelay: '0.25s'}}>
+              <View className="flex flex-row items-center mb-4">
+                <View className="i-mdi-flash text-xl text-flash mr-2" />
+                <Text className="text-base font-semibold text-foreground">闪光灯设置</Text>
               </View>
-              <View className="grid grid-cols-3 gap-4">
-                <View className="bg-accent-foreground/10 rounded-xl p-3">
-                  <Text className="text-xs text-accent-foreground/70 block mb-2">模式</Text>
-                  <Text className="text-2xl font-mono-param font-bold text-accent-foreground block">
-                    {params.flashMode}
-                  </Text>
-                </View>
-                <View className="bg-accent-foreground/10 rounded-xl p-3">
-                  <Text className="text-xs text-accent-foreground/70 block mb-2">功率</Text>
-                  <Text className="text-2xl font-mono-param font-bold text-accent-foreground block">
-                    {params.flashPower}
-                  </Text>
-                </View>
-                <View className="bg-accent-foreground/10 rounded-xl p-3">
-                  <Text className="text-xs text-accent-foreground/70 block mb-2">角度</Text>
-                  <Text className="text-2xl font-mono-param font-bold text-accent-foreground block">
-                    {params.flashAngle}°
-                  </Text>
-                </View>
+
+              <View className="grid grid-cols-2 gap-4 mb-4">
+                {params.flashMode && (
+                  <View className="bg-secondary rounded-xl p-3">
+                    <Text className="text-xs text-muted-foreground block mb-1">模式</Text>
+                    <Text className="text-lg font-mono-param font-bold text-flash block">{params.flashMode}</Text>
+                  </View>
+                )}
+                {params.flashPower && (
+                  <View className="bg-secondary rounded-xl p-3">
+                    <Text className="text-xs text-muted-foreground block mb-1">功率/补偿</Text>
+                    <Text className="text-lg font-mono-param font-bold text-flash block">{params.flashPower}</Text>
+                  </View>
+                )}
+                {params.flashZoom && (
+                  <View className="bg-secondary rounded-xl p-3">
+                    <Text className="text-xs text-muted-foreground block mb-1">焦距</Text>
+                    <Text className="text-lg font-mono-param font-bold text-flash block">{params.flashZoom}</Text>
+                  </View>
+                )}
+                {params.flashAngle && (
+                  <View className="bg-secondary rounded-xl p-3">
+                    <Text className="text-xs text-muted-foreground block mb-1">灯头角度</Text>
+                    <Text className="text-lg font-mono-param font-bold text-flash block">{params.flashAngle}</Text>
+                  </View>
+                )}
               </View>
+
+              {params.flashHssSync !== undefined && (
+                <View className="flex flex-row items-center mb-3">
+                  <View
+                    className={`w-4 h-4 rounded mr-2 ${params.flashHssSync ? 'bg-flash' : 'bg-muted-foreground/30'}`}
+                  />
+                  <Text className="text-sm text-foreground">高速同步 (HSS)</Text>
+                </View>
+              )}
+
+              {params.flashDiffuserAdvice && (
+                <View className="bg-secondary rounded-xl p-3">
+                  <Text className="text-xs text-muted-foreground block mb-2">柔光建议</Text>
+                  <Text className="text-sm text-foreground leading-relaxed block">{params.flashDiffuserAdvice}</Text>
+                </View>
+              )}
             </View>
           )}
 
-          {/* 操作建议 */}
+          {/* 专家建议 */}
           <View
-            className="bg-secondary rounded-2xl p-5 border border-border mb-4 animate-fade-in"
-            style={{animationDelay: '0.15s'}}>
-            <View className="flex flex-row items-start gap-3">
-              <View className="i-mdi-lightbulb-on text-2xl text-primary mt-0.5 flex-shrink-0" />
-              <View className="flex-1">
-                <Text className="text-sm font-semibold text-foreground block mb-2">操作建议</Text>
-                <Text className="text-sm text-muted-foreground block leading-relaxed">{params.suggestion}</Text>
-              </View>
+            className="bg-card rounded-2xl p-5 border border-border mb-4 animate-fade-in"
+            style={{animationDelay: '0.3s'}}>
+            <View className="flex flex-row items-center mb-3">
+              <View className="i-mdi-lightbulb text-xl text-accent mr-2" />
+              <Text className="text-base font-semibold text-foreground">专家建议</Text>
             </View>
+            <Text className="text-sm text-foreground leading-relaxed block">{params.suggestion}</Text>
           </View>
 
-          {/* 底部按钮组 */}
-          <View className="flex flex-col gap-3 animate-fade-in" style={{animationDelay: '0.2s'}}>
+          {/* 操作按钮 */}
+          <View className="flex flex-col gap-3 animate-fade-in" style={{animationDelay: '0.35s'}}>
             <Button
-              className="w-full bg-gradient-primary text-white py-4 rounded-xl break-keep text-base font-semibold"
+              className="w-full bg-primary text-white py-4 rounded-xl break-keep text-base"
               size="default"
               onClick={handleNewAnalysis}>
-              再次分析
+              生成新参数
             </Button>
             <Button
-              className="w-full bg-secondary text-foreground py-4 rounded-xl break-keep text-base font-semibold border border-border"
+              className="w-full bg-secondary text-foreground py-4 rounded-xl break-keep text-base"
               size="default"
-              onClick={() => Taro.navigateTo({url: '/pages/history/index'})}>
-              查看历史记录
+              onClick={handleBack}>
+              返回首页
             </Button>
           </View>
         </View>
