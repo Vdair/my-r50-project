@@ -15,26 +15,20 @@ declare const __COZE_API_TOKEN__: string
  * 使用 Vite define 配置注入的全局常量
  * 这样可以避免 import.meta.env 的模块解析问题
  *
- * 在 H5 环境中，使用代理路径避免 CORS 问题
+ * 临时测试：直接使用完整 URL，不使用代理
+ * 如果成功，说明问题出在代理配置上
  */
 const getCozeApiUrl = (): string => {
-  // 检查是否在 H5 环境（浏览器）
-  const isH5 = typeof window !== 'undefined' && typeof document !== 'undefined'
-
-  if (isH5) {
-    // H5 环境：使用代理路径，避免 CORS 问题
-    // 代理配置在 config/index.ts 的 h5.devServer.proxy 中
-    // /api/coze 会被代理到 https://3mp9d3y2dz.coze.site
-    return '/api/coze/run'
-  }
-
-  // 小程序环境：直接使用完整 URL
+  // 临时测试：直接使用完整 URL
   // 优先使用 Vite define 注入的全局常量
   if (typeof __COZE_API_URL__ !== 'undefined' && __COZE_API_URL__) {
+    console.log('🔗 使用完整 URL（不使用代理）:', __COZE_API_URL__)
     return __COZE_API_URL__
   }
   // 降级到 import.meta.env（用于开发环境）
-  return import.meta.env.VITE_COZE_API_URL || import.meta.env.TARO_APP_COZE_API_URL || ''
+  const url = import.meta.env.VITE_COZE_API_URL || import.meta.env.TARO_APP_COZE_API_URL || ''
+  console.log('🔗 使用完整 URL（不使用代理）:', url)
+  return url
 }
 
 /**
