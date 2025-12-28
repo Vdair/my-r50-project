@@ -1,44 +1,37 @@
 /**
- * 扣子 API 测试脚本
- * 用于验证 API 调用是否正常工作
+ * 测试脚本：直接请求扣子 API
+ * 用于验证 API 是否可用，以及正确的请求格式
  */
 
 const https = require('https')
 
 // 从环境变量读取配置
-const COZE_API_URL = 'https://3mp9d3y2dz.coze.site/run'
-const COZE_API_TOKEN = process.env.VITE_COZE_API_TOKEN || process.env.TARO_APP_COZE_API_TOKEN || ''
+require('dotenv').config()
 
-// 测试输入文本
-const testInputText = '镜头：RF 55mm f/1.8，拍摄场景：室内夜景人像，光线环境：黄金时刻，天气：晴天，风格偏好：日系小清新，闪光灯：开启'
+const COZE_API_URL = process.env.VITE_COZE_API_URL || process.env.TARO_APP_COZE_API_URL
+const COZE_API_TOKEN = process.env.VITE_COZE_API_TOKEN || process.env.TARO_APP_COZE_API_TOKEN
 
 console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-console.log('🧪 扣子 API 测试脚本')
+console.log('🧪 测试扣子 API')
 console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-console.log('📋 测试配置:')
-console.log('  URL:', COZE_API_URL)
-console.log('  Token:', COZE_API_TOKEN ? `${COZE_API_TOKEN.substring(0, 30)}...` : '(未设置)')
-console.log('  输入文本:', testInputText)
+console.log('📍 URL:', COZE_API_URL)
+console.log('🔑 Token:', COZE_API_TOKEN ? `${COZE_API_TOKEN.substring(0, 30)}...` : '未设置')
 console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 
-if (!COZE_API_TOKEN) {
-  console.error('❌ 错误: COZE_API_TOKEN 未设置')
-  console.error('请先设置环境变量:')
-  console.error('  export VITE_COZE_API_TOKEN="your_token_here"')
-  console.error('或者:')
-  console.error('  export TARO_APP_COZE_API_TOKEN="your_token_here"')
+if (!COZE_API_URL || !COZE_API_TOKEN) {
+  console.error('❌ 错误：未设置 COZE_API_URL 或 COZE_API_TOKEN')
   process.exit(1)
 }
-
-// 构建请求数据
-const postData = JSON.stringify({
-  input_text: testInputText
-})
 
 // 解析 URL
 const url = new URL(COZE_API_URL)
 
-// 配置请求选项
+// 请求体
+const requestBody = JSON.stringify({
+  input_text: '镜头：RF 55mm f/1.8，闪光灯：关闭，场景：室内夜景人像，光线：黄金时刻，天气：晴天，风格：日系小清新'
+})
+
+// 请求选项
 const options = {
   hostname: url.hostname,
   port: url.port || 443,
@@ -47,19 +40,30 @@ const options = {
   headers: {
     'Authorization': `Bearer ${COZE_API_TOKEN}`,
     'Content-Type': 'application/json',
-    'Content-Length': Buffer.byteLength(postData)
+    'Content-Length': Buffer.byteLength(requestBody),
+    'Accept': 'application/json'
   }
 }
 
-console.log('\n📤 发送请求...\n')
+console.log('\n📤 发送请求')
+console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+console.log('🌐 主机:', options.hostname)
+console.log('🔌 端口:', options.port)
+console.log('📍 路径:', options.path)
+console.log('📋 请求头:', JSON.stringify(options.headers, null, 2))
+console.log('📦 请求体:', requestBody)
+console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 
-// 发送请求
+const startTime = Date.now()
+
 const req = https.request(options, (res) => {
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-  console.log('📥 收到响应')
+  const duration = Date.now() - startTime
+  
+  console.log('\n📥 收到响应')
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
   console.log('📊 状态码:', res.statusCode)
   console.log('📋 响应头:', JSON.stringify(res.headers, null, 2))
+  console.log('⏱️  响应时间:', duration, 'ms')
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 
   let data = ''
@@ -69,58 +73,47 @@ const req = https.request(options, (res) => {
   })
 
   res.on('end', () => {
-    console.log('\n📦 响应数据:')
+    console.log('\n📦 响应数据')
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
     
     try {
       const jsonData = JSON.parse(data)
       console.log(JSON.stringify(jsonData, null, 2))
       
-      console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-      
       if (res.statusCode === 200) {
-        if (jsonData.output_text) {
-          console.log('✅ API 调用成功！')
-          console.log('\n📝 输出文本:')
-          console.log(jsonData.output_text)
-          
-          // 尝试解析 JSON
-          try {
-            const jsonMatch = jsonData.output_text.match(/\{[\s\S]*\}/)
-            if (jsonMatch) {
-              const params = JSON.parse(jsonMatch[0])
-              console.log('\n📸 解析后的相机参数:')
-              console.log(JSON.stringify(params, null, 2))
-            }
-          } catch (e) {
-            console.log('\n⚠️ 无法解析为 JSON，可能需要调整解析逻辑')
-          }
-        } else {
-          console.log('⚠️ 响应中缺少 output_text 字段')
-        }
+        console.log('\n✅ 测试成功！')
       } else {
-        console.log('❌ API 调用失败')
-        console.log('错误信息:', jsonData.message || jsonData.error || '未知错误')
+        console.log('\n❌ 测试失败：状态码', res.statusCode)
       }
-    } catch (e) {
-      console.log('原始响应（非 JSON）:')
-      console.log(data)
-      console.log('\n❌ 解析响应失败:', e.message)
+    } catch (error) {
+      console.log('原始数据:', data)
+      console.log('\n❌ 解析 JSON 失败:', error.message)
     }
     
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
   })
 })
 
-req.on('error', (e) => {
-  console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-  console.error('❌ 请求失败')
-  console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-  console.error('错误信息:', e.message)
-  console.error('错误详情:', e)
-  console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+req.on('error', (error) => {
+  const duration = Date.now() - startTime
+  
+  console.log('\n❌ 请求失败')
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+  console.log('⏱️  失败时间:', duration, 'ms')
+  console.log('❌ 错误信息:', error.message)
+  console.log('❌ 错误代码:', error.code)
+  console.log('❌ 错误堆栈:', error.stack)
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 })
 
-// 发送请求数据
-req.write(postData)
+req.on('timeout', () => {
+  console.log('\n⏱️  请求超时')
+  req.destroy()
+})
+
+// 设置超时时间（30 秒）
+req.setTimeout(30000)
+
+// 发送请求体
+req.write(requestBody)
 req.end()

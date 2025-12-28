@@ -79,8 +79,10 @@ export default defineConfig<'vite'>(async (merge) => {
                     changeOrigin: true,
                     rewrite: (path) => path.replace(/^\/api\/coze/, ''),
                     secure: true,
-                    // 增加超时时间
-                    timeout: 60000,
+                    // Vite 代理基于 http-proxy-middleware
+                    // 需要设置足够长的超时时间（扣子 API 响应需要约 10 秒）
+                    proxyTimeout: 30000, // 代理超时：30 秒
+                    timeout: 30000, // 请求超时：30 秒
                     configure: (proxy, options) => {
                       proxy.on('proxyReq', (proxyReq, req, _res) => {
                         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
@@ -105,8 +107,15 @@ export default defineConfig<'vite'>(async (merge) => {
                         console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
                         console.error('📍 URL:', req.url)
                         console.error('❌ 错误:', err.message)
+                        console.error('❌ 错误代码:', err.code)
                         console.error('❌ 堆栈:', err.stack)
                         console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+                      })
+                      proxy.on('proxyReqWs', (_proxyReq, _req, _socket, _options, _head) => {
+                        console.log('🔌 WebSocket 代理请求')
+                      })
+                      proxy.on('econnreset', (err, _req, _res) => {
+                        console.error('❌ 连接重置:', err.message)
                       })
                     }
                   }
