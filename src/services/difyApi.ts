@@ -183,7 +183,6 @@ export const generateParamsWithAI = async (
         inputs: {},
         query: paramsText,
         response_mode: 'blocking',
-        conversation_id: '',
         user: 'r50-user'
       },
       timeout: 30000
@@ -198,9 +197,30 @@ export const generateParamsWithAI = async (
 
     // 检查响应状态码
     if (response.statusCode !== 200) {
-      const error = `Dify API 请求失败，HTTP 状态码: ${response.statusCode}`
+      const errorData = response.data as any
+      const errorMessage = errorData?.message || errorData?.error || '未知错误'
+      const errorCode = errorData?.code || errorData?.error_code || '无错误码'
+
+      const error = `Dify API 请求失败
+
+【错误信息】
+- HTTP 状态码: ${response.statusCode}
+- 错误消息: ${errorMessage}
+- 错误代码: ${errorCode}
+
+【请求信息】
+- URL: ${DIFY_API_URL}/chat-messages
+- 参数文本: ${paramsText}
+
+【可能原因】
+${response.statusCode === 400 ? '- 请求参数格式错误\n- API Key 可能无效\n- 请求体格式不符合 Dify API 要求' : ''}
+${response.statusCode === 401 ? '- API Key 无效或已过期\n- Authorization 头格式错误' : ''}
+${response.statusCode === 403 ? '- API Key 没有访问权限\n- 账户配额已用完' : ''}
+${response.statusCode === 429 ? '- 请求频率超过限制\n- 请稍后重试' : ''}
+${response.statusCode >= 500 ? '- Dify 服务器内部错误\n- 请稍后重试' : ''}`
+
       console.error('❌ 请求失败:', error)
-      console.error('❌ 响应内容:', response.data)
+      console.error('❌ 完整响应:', JSON.stringify(response.data, null, 2))
       throw new Error(error)
     }
 
