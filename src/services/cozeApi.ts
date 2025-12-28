@@ -6,11 +6,34 @@
 import Taro from '@tarojs/taro'
 import type {CameraParams, LensType, LightingType, SceneType, StyleType, WeatherType} from '@/store/cameraStore'
 
-// 读取环境变量
-// 在 H5 环境中，优先使用 VITE_ 前缀（Vite 默认支持）
-// 降级到 TARO_APP_ 前缀（需要在 config/dev.ts 中配置 envPrefix）
-const COZE_API_URL = import.meta.env.VITE_COZE_API_URL || import.meta.env.TARO_APP_COZE_API_URL || ''
-const COZE_API_TOKEN = import.meta.env.VITE_COZE_API_TOKEN || import.meta.env.TARO_APP_COZE_API_TOKEN || ''
+/**
+ * 获取环境变量的辅助函数
+ * 在 H5 环境中，优先使用 VITE_ 前缀（Vite 默认支持）
+ * 降级到 TARO_APP_ 前缀（需要在 config/dev.ts 中配置 envPrefix）
+ *
+ * 注意：这个函数每次调用都会重新读取环境变量，确保获取最新的值
+ */
+const getEnvVar = (name: string): string => {
+  // 尝试 VITE_ 前缀
+  const viteKey = `VITE_${name}`
+  const viteValue = import.meta.env[viteKey]
+  if (viteValue) {
+    return viteValue as string
+  }
+
+  // 尝试 TARO_APP_ 前缀
+  const taroKey = `TARO_APP_${name}`
+  const taroValue = import.meta.env[taroKey]
+  if (taroValue) {
+    return taroValue as string
+  }
+
+  return ''
+}
+
+// 获取扣子 API 配置
+const getCozeApiUrl = (): string => getEnvVar('COZE_API_URL')
+const getCozeApiToken = (): string => getEnvVar('COZE_API_TOKEN')
 
 // 扣子 API 响应类型
 interface CozeResponse {
@@ -210,6 +233,10 @@ export const generateParamsWithCoze = async (
   weather: WeatherType,
   style: StyleType
 ): Promise<CameraParams> => {
+  // 获取环境变量（每次调用时重新获取，确保获取最新的值）
+  const COZE_API_URL = getCozeApiUrl()
+  const COZE_API_TOKEN = getCozeApiToken()
+
   // 调试日志：查看环境变量
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
   console.log('🔍 扣子 API 环境变量调试信息')
@@ -233,17 +260,24 @@ export const generateParamsWithCoze = async (
 【排查步骤】
 1. 确认 .env 文件存在于项目根目录
 2. 确认 .env 文件包含以下配置：
+   VITE_COZE_API_URL=https://3mp9d3y2dz.coze.site/run
+   VITE_COZE_API_TOKEN=your_token_here
+   
+   或者（小程序环境）：
    TARO_APP_COZE_API_URL=https://3mp9d3y2dz.coze.site/run
    TARO_APP_COZE_API_TOKEN=your_token_here
 3. 重启开发服务器（必须！）：
    - 停止当前服务器（Ctrl+C）
+   - 清理缓存：rm -rf node_modules/.vite dist
    - 重新运行：npm run dev:h5
-4. 刷新浏览器页面
+4. 强制刷新浏览器页面（Ctrl+Shift+R）
 5. 查看控制台的"环境变量调试信息"
 
 【注意事项】
-- H5 环境需要在 config/dev.ts 中配置 envPrefix
-- 修改 .env 文件后必须重启服务器才能生效`
+- H5 环境需要使用 VITE_ 前缀
+- 小程序环境使用 TARO_APP_ 前缀
+- 修改 .env 文件后必须重启服务器才能生效
+- Vite 在编译时会替换 import.meta.env.VITE_XXX`
 
     console.error('❌ 配置错误:', error)
     throw new Error(error)

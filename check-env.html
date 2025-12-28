@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>环境变量检查</title>
+  <style>
+    body {
+      font-family: monospace;
+      padding: 20px;
+      background: #1a1a1a;
+      color: #fff;
+    }
+    .section {
+      margin: 20px 0;
+      padding: 15px;
+      background: #2a2a2a;
+      border-radius: 8px;
+    }
+    .success { color: #4ade80; }
+    .error { color: #f87171; }
+    .warning { color: #fbbf24; }
+  </style>
+</head>
+<body>
+  <h1>🔍 环境变量检查</h1>
+  
+  <div class="section">
+    <h2>1. import.meta.env 对象</h2>
+    <pre id="import-meta-env"></pre>
+  </div>
+  
+  <div class="section">
+    <h2>2. VITE_ 前缀变量</h2>
+    <pre id="vite-vars"></pre>
+  </div>
+  
+  <div class="section">
+    <h2>3. TARO_APP_ 前缀变量</h2>
+    <pre id="taro-vars"></pre>
+  </div>
+  
+  <div class="section">
+    <h2>4. 扣子 API 配置</h2>
+    <pre id="coze-config"></pre>
+  </div>
+
+  <script type="module">
+    // 1. 显示所有 import.meta.env
+    document.getElementById('import-meta-env').textContent = JSON.stringify(import.meta.env, null, 2);
+    
+    // 2. VITE_ 前缀变量
+    const viteVars = {
+      VITE_COZE_API_URL: import.meta.env.VITE_COZE_API_URL,
+      VITE_COZE_API_TOKEN: import.meta.env.VITE_COZE_API_TOKEN ? '已设置 (' + import.meta.env.VITE_COZE_API_TOKEN.substring(0, 30) + '...)' : '未设置'
+    };
+    document.getElementById('vite-vars').textContent = JSON.stringify(viteVars, null, 2);
+    
+    // 3. TARO_APP_ 前缀变量
+    const taroVars = {
+      TARO_APP_COZE_API_URL: import.meta.env.TARO_APP_COZE_API_URL,
+      TARO_APP_COZE_API_TOKEN: import.meta.env.TARO_APP_COZE_API_TOKEN ? '已设置 (' + import.meta.env.TARO_APP_COZE_API_TOKEN.substring(0, 30) + '...)' : '未设置'
+    };
+    document.getElementById('taro-vars').textContent = JSON.stringify(taroVars, null, 2);
+    
+    // 4. 扣子 API 配置
+    const COZE_API_URL = import.meta.env.VITE_COZE_API_URL || import.meta.env.TARO_APP_COZE_API_URL || '';
+    const COZE_API_TOKEN = import.meta.env.VITE_COZE_API_TOKEN || import.meta.env.TARO_APP_COZE_API_TOKEN || '';
+    
+    const cozeConfig = {
+      URL: COZE_API_URL || '❌ 未设置',
+      TOKEN: COZE_API_TOKEN ? '✅ 已设置 (' + COZE_API_TOKEN.substring(0, 30) + '...)' : '❌ 未设置',
+      状态: (COZE_API_URL && COZE_API_TOKEN) ? '✅ 配置完整' : '❌ 配置缺失'
+    };
+    document.getElementById('coze-config').textContent = JSON.stringify(cozeConfig, null, 2);
+    
+    // 添加样式
+    if (COZE_API_URL && COZE_API_TOKEN) {
+      document.getElementById('coze-config').className = 'success';
+    } else {
+      document.getElementById('coze-config').className = 'error';
+    }
+  </script>
+</body>
+</html>
