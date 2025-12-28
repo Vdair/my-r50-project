@@ -79,10 +79,8 @@ export default defineConfig<'vite'>(async (merge) => {
                     changeOrigin: true,
                     rewrite: (path) => path.replace(/^\/api\/coze/, ''),
                     secure: true,
-                    // 保留所有请求头
-                    headers: {
-                      Connection: 'keep-alive'
-                    },
+                    // 增加超时时间
+                    timeout: 60000,
                     configure: (proxy, options) => {
                       proxy.on('proxyReq', (proxyReq, req, _res) => {
                         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
