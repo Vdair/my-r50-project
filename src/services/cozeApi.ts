@@ -55,6 +55,61 @@ const getCozeApiToken = (): string => {
   return import.meta.env.VITE_COZE_API_TOKEN || import.meta.env.TARO_APP_COZE_API_TOKEN || ''
 }
 
+/**
+ * 生成 Mock 参数数据（降级方案）
+ * 当扣子 API 不可用时使用
+ */
+const generateMockParams = (
+  lens: LensType,
+  flash: boolean,
+  scene: SceneType,
+  lighting: LightingType,
+  style: StyleType
+): CameraParams => {
+  console.log('🎭 生成 Mock 参数数据')
+  console.log('📸 镜头:', lens)
+  console.log('💡 闪光灯:', flash ? '开启' : '关闭')
+  console.log('🎬 场景:', scene)
+  console.log('☀️ 光线:', lighting)
+  console.log('🎨 风格:', style)
+
+  // 根据场景和光线生成合理的参数
+  const isoMap: Record<LightingType, number> = {
+    dawn: 800,
+    noon: 200,
+    golden: 400,
+    night: 1600
+  }
+
+  const apertureMap: Record<LensType, string> = {
+    '55mm': 'f/2.8',
+    '18-150mm': 'f/5.6',
+    '100-400mm': 'f/8'
+  }
+
+  const shutterSpeedMap: Record<LightingType, string> = {
+    dawn: '1/125',
+    noon: '1/500',
+    golden: '1/250',
+    night: '1/60'
+  }
+
+  return {
+    iso: isoMap[lighting] || 400,
+    aperture: apertureMap[lens] || 'f/5.6',
+    shutterSpeed: shutterSpeedMap[lighting] || '1/125',
+    whiteBalance: lighting === 'noon' ? '日光' : lighting === 'night' ? '钨丝灯' : '自动',
+    sharpness: style === 'japanese' ? 2 : style === 'film' ? 3 : 4,
+    contrast: style === 'blackwhite' ? 3 : style === 'film' ? -1 : 0,
+    saturation: style === 'japanese' ? -1 : style === 'blackwhite' ? -4 : 0,
+    tone: style === 'japanese' ? 1 : 0,
+    flashMode: flash ? 'TTL' : undefined,
+    flashPower: flash ? 'TTL-0.3' : undefined,
+    flashAngle: flash ? 0 : undefined,
+    suggestion: `这是 Mock 数据降级方案。建议：${scene} 场景下，使用 ${lens} 镜头，${lighting} 光线条件，${style} 风格。${flash ? '开启闪光灯可以补光。' : ''}请联系技术支持解决 API 问题以获取更准确的参数建议。`
+  }
+}
+
 // 扣子 API 响应类型
 interface CozeResponse {
   optimized_params?: {
@@ -355,7 +410,16 @@ export const generateParamsWithCoze = async (
     console.log('📦 响应数据:', JSON.stringify(response.data, null, 2))
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 
-    // 检查响应状态码
+    // 检查响应状态码 - 如果是 502，使用 Mock 数据
+    if (response.statusCode === 502) {
+      console.warn('⚠️ 扣子 API 返回 502 错误，使用 Mock 数据降级')
+      console.warn('⚠️ 这是临时方案，请联系技术支持解决代理问题')
+
+      // 返回 Mock 数据
+      return generateMockParams(lens, flash, scene, lighting, style)
+    }
+
+    // 检查其他错误状态码
     if (response.statusCode !== 200) {
       const errorData = response.data as CozeResponse
       const errorMessage = errorData?.message || errorData?.error || '未知错误'
@@ -379,6 +443,13 @@ ${response.statusCode >= 500 ? '- 扣子服务器内部错误\n- 请稍后重试
 
       console.error('❌ 请求失败:', error)
       console.error('❌ 完整响应:', JSON.stringify(response.data, null, 2))
+
+      // 对于服务器错误，也使用 Mock 数据降级
+      if (response.statusCode >= 500) {
+        console.warn('⚠️ 服务器错误，使用 Mock 数据降级')
+        return generateMockParams(lens, flash, scene, lighting, style)
+      }
+
       throw new Error(error)
     }
 
@@ -430,26 +501,14 @@ ${JSON.stringify(data, null, 2)}
 
     return params
   } catch (error: any) {
-    // 如果是网络错误或其他异常
+    // 如果是网络错误或其他异常，使用 Mock 数据降级
     if (!error.message.includes('扣子 API')) {
-      const networkError = `扣子 API 调用异常
+      console.warn('⚠️ 网络错误或请求异常，使用 Mock 数据降级')
+      console.warn('⚠️ 错误信息:', error.message)
+      console.warn('⚠️ 这是临时方案，请检查网络连接或联系技术支持')
 
-【错误信息】
-${error.message}
-
-【可能原因】
-- 网络连接失败
-- 请求超时（超过 30 秒）
-- 服务器无响应
-
-【建议】
-1. 检查网络连接
-2. 稍后重试
-3. 查看控制台完整错误日志`
-
-      console.error('❌ 网络错误:', networkError)
-      console.error('❌ 原始错误:', error)
-      throw new Error(networkError)
+      // 返回 Mock 数据
+      return generateMockParams(lens, flash, scene, lighting, style)
     }
 
     // 重新抛出已处理的错误
