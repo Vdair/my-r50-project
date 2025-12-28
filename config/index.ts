@@ -237,7 +237,28 @@ export default defineConfig<'vite'>(async (merge) => {
         }
       },
       devServer: {
-        open: false
+        open: false,
+        proxy: {
+          // 代理扣子 API 请求，避免 CORS 问题
+          '/api/coze': {
+            target: 'https://3mp9d3y2dz.coze.site',
+            changeOrigin: true,
+            rewrite: (path) => path.replace(/^\/api\/coze/, ''),
+            secure: true,
+            // 添加请求头
+            configure: (proxy, options) => {
+              proxy.on('proxyReq', (proxyReq, req, _res) => {
+                console.log('🔄 代理请求:', req.method, req.url, '-> ', options.target + proxyReq.path)
+              })
+              proxy.on('proxyRes', (proxyRes, req, _res) => {
+                console.log('✅ 代理响应:', proxyRes.statusCode, req.url)
+              })
+              proxy.on('error', (err, req, _res) => {
+                console.error('❌ 代理错误:', err.message, req.url)
+              })
+            }
+          }
+        }
       }
     }
   }

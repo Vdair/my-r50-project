@@ -14,8 +14,21 @@ declare const __COZE_API_TOKEN__: string
  * 获取扣子 API URL
  * 使用 Vite define 配置注入的全局常量
  * 这样可以避免 import.meta.env 的模块解析问题
+ *
+ * 在 H5 环境中，使用代理路径避免 CORS 问题
  */
 const getCozeApiUrl = (): string => {
+  // 检查是否在 H5 环境（浏览器）
+  const isH5 = typeof window !== 'undefined' && typeof document !== 'undefined'
+
+  if (isH5) {
+    // H5 环境：使用代理路径，避免 CORS 问题
+    // 代理配置在 config/index.ts 的 h5.devServer.proxy 中
+    // /api/coze 会被代理到 https://3mp9d3y2dz.coze.site
+    return '/api/coze/run'
+  }
+
+  // 小程序环境：直接使用完整 URL
   // 优先使用 Vite define 注入的全局常量
   if (typeof __COZE_API_URL__ !== 'undefined' && __COZE_API_URL__) {
     return __COZE_API_URL__
