@@ -66,12 +66,10 @@ export default defineConfig<'vite'>(async (merge) => {
               // 设置 envPrefix 以支持读取环境变量
               envPrefix: ['VITE_', 'TARO_APP_'],
               // 使用 define 配置直接注入环境变量值
-              // 这样可以确保在编译时将环境变量替换为实际值
+              // 注意：只注入我们需要的环境变量，避免影响其他模块
               define: {
-                'import.meta.env.VITE_COZE_API_URL': JSON.stringify(cozeApiUrl),
-                'import.meta.env.TARO_APP_COZE_API_URL': JSON.stringify(cozeApiUrl),
-                'import.meta.env.VITE_COZE_API_TOKEN': JSON.stringify(cozeApiToken),
-                'import.meta.env.TARO_APP_COZE_API_TOKEN': JSON.stringify(cozeApiToken)
+                __COZE_API_URL__: JSON.stringify(cozeApiUrl),
+                __COZE_API_TOKEN__: JSON.stringify(cozeApiToken)
               }
             }
           }

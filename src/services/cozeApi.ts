@@ -6,27 +6,35 @@
 import Taro from '@tarojs/taro'
 import type {CameraParams, LensType, LightingType, SceneType, StyleType, WeatherType} from '@/store/cameraStore'
 
+// 声明全局常量类型（由 Vite define 配置注入）
+declare const __COZE_API_URL__: string
+declare const __COZE_API_TOKEN__: string
+
 /**
  * 获取扣子 API URL
- * 在 H5 环境中，优先使用 VITE_ 前缀（Vite 默认支持）
- * 降级到 TARO_APP_ 前缀（需要在 config/dev.ts 中配置 envPrefix）
- *
- * 注意：必须直接访问 import.meta.env.VITE_XXX，不能使用动态键名
- * 因为 Vite 在编译时会将 import.meta.env.VITE_XXX 替换为实际值
+ * 使用 Vite define 配置注入的全局常量
+ * 这样可以避免 import.meta.env 的模块解析问题
  */
 const getCozeApiUrl = (): string => {
+  // 优先使用 Vite define 注入的全局常量
+  if (typeof __COZE_API_URL__ !== 'undefined' && __COZE_API_URL__) {
+    return __COZE_API_URL__
+  }
+  // 降级到 import.meta.env（用于开发环境）
   return import.meta.env.VITE_COZE_API_URL || import.meta.env.TARO_APP_COZE_API_URL || ''
 }
 
 /**
  * 获取扣子 API Token
- * 在 H5 环境中，优先使用 VITE_ 前缀（Vite 默认支持）
- * 降级到 TARO_APP_ 前缀（需要在 config/dev.ts 中配置 envPrefix）
- *
- * 注意：必须直接访问 import.meta.env.VITE_XXX，不能使用动态键名
- * 因为 Vite 在编译时会将 import.meta.env.VITE_XXX 替换为实际值
+ * 使用 Vite define 配置注入的全局常量
+ * 这样可以避免 import.meta.env 的模块解析问题
  */
 const getCozeApiToken = (): string => {
+  // 优先使用 Vite define 注入的全局常量
+  if (typeof __COZE_API_TOKEN__ !== 'undefined' && __COZE_API_TOKEN__) {
+    return __COZE_API_TOKEN__
+  }
+  // 降级到 import.meta.env（用于开发环境）
   return import.meta.env.VITE_COZE_API_TOKEN || import.meta.env.TARO_APP_COZE_API_TOKEN || ''
 }
 
