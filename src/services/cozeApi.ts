@@ -7,33 +7,28 @@ import Taro from '@tarojs/taro'
 import type {CameraParams, LensType, LightingType, SceneType, StyleType, WeatherType} from '@/store/cameraStore'
 
 /**
- * 获取环境变量的辅助函数
+ * 获取扣子 API URL
  * 在 H5 环境中，优先使用 VITE_ 前缀（Vite 默认支持）
  * 降级到 TARO_APP_ 前缀（需要在 config/dev.ts 中配置 envPrefix）
  *
- * 注意：这个函数每次调用都会重新读取环境变量，确保获取最新的值
+ * 注意：必须直接访问 import.meta.env.VITE_XXX，不能使用动态键名
+ * 因为 Vite 在编译时会将 import.meta.env.VITE_XXX 替换为实际值
  */
-const getEnvVar = (name: string): string => {
-  // 尝试 VITE_ 前缀
-  const viteKey = `VITE_${name}`
-  const viteValue = import.meta.env[viteKey]
-  if (viteValue) {
-    return viteValue as string
-  }
-
-  // 尝试 TARO_APP_ 前缀
-  const taroKey = `TARO_APP_${name}`
-  const taroValue = import.meta.env[taroKey]
-  if (taroValue) {
-    return taroValue as string
-  }
-
-  return ''
+const getCozeApiUrl = (): string => {
+  return import.meta.env.VITE_COZE_API_URL || import.meta.env.TARO_APP_COZE_API_URL || ''
 }
 
-// 获取扣子 API 配置
-const getCozeApiUrl = (): string => getEnvVar('COZE_API_URL')
-const getCozeApiToken = (): string => getEnvVar('COZE_API_TOKEN')
+/**
+ * 获取扣子 API Token
+ * 在 H5 环境中，优先使用 VITE_ 前缀（Vite 默认支持）
+ * 降级到 TARO_APP_ 前缀（需要在 config/dev.ts 中配置 envPrefix）
+ *
+ * 注意：必须直接访问 import.meta.env.VITE_XXX，不能使用动态键名
+ * 因为 Vite 在编译时会将 import.meta.env.VITE_XXX 替换为实际值
+ */
+const getCozeApiToken = (): string => {
+  return import.meta.env.VITE_COZE_API_TOKEN || import.meta.env.TARO_APP_COZE_API_TOKEN || ''
+}
 
 // 扣子 API 响应类型
 interface CozeResponse {
