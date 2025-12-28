@@ -14,7 +14,46 @@ const COZE_API_TOKEN = import.meta.env.VITE_COZE_API_TOKEN || import.meta.env.TA
 
 // 扣子 API 响应类型
 interface CozeResponse {
-  output_text?: string
+  optimized_params?: {
+    scene_analysis?: {
+      summary?: string
+      difficulty_level?: string
+    }
+    lens_recommendation?: {
+      focal_length?: string
+      reason?: string
+    }
+    camera_settings_r50?: {
+      shooting_mode?: string
+      aperture?: string
+      shutter_speed?: string
+      iso?: number
+      exposure_compensation?: string
+      white_balance?: {
+        mode_or_kelvin?: string
+        shift?: string
+      }
+    }
+    picture_style_settings?: {
+      style_name?: string
+      sharpness?: number
+      contrast?: number
+      saturation?: number
+      color_tone?: number
+    }
+    flash_godox_tt685ii?: {
+      enable?: boolean
+      mode?: string
+      hss_sync?: boolean
+      power_or_comp?: string
+      zoom?: string
+      head_angle?: string
+      diffuser_advice?: string
+    }
+    expert_advice?: string
+  }
+  run_id?: string
+  output_text?: string // 保留兼容性
   error?: string
   message?: string
   [key: string]: any
@@ -99,41 +138,64 @@ const buildCozeInputText = (
 
 /**
  * 解析扣子 API 返回的参数
- * 期望返回 JSON 格式的相机参数
+ * 适配扣子工作流返回的 optimized_params 格式
  */
-const parseCozeResponse = (response: string): CameraParams | null => {
+const parseCozeResponse = (data: CozeResponse): CameraParams | null => {
   try {
-    // 尝试提取 JSON 部分
-    const jsonMatch = response.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) {
-      console.error('❌ 无法从响应中提取 JSON:', response)
+    // 检查是否有 optimized_params
+    if (!data.optimized_params) {
+      console.error('❌ 响应中缺少 optimized_params 字段')
       return null
     }
 
-    const jsonStr = jsonMatch[0]
-    const params = JSON.parse(jsonStr)
+    const optimized = data.optimized_params
+    const cameraSettings = optimized.camera_settings_r50
+    const pictureStyle = optimized.picture_style_settings
+    const flash = optimized.flash_godox_tt685ii
 
     // 验证必需字段
-    if (
-      typeof params.iso !== 'number' ||
-      typeof params.aperture !== 'string' ||
-      typeof params.shutterSpeed !== 'string' ||
-      typeof params.whiteBalance !== 'string' ||
-      typeof params.sharpness !== 'number' ||
-      typeof params.contrast !== 'number' ||
-      typeof params.saturation !== 'number' ||
-      typeof params.tone !== 'number' ||
-      typeof params.suggestion !== 'string'
-    ) {
-      console.error('❌ 参数格式不正确:', params)
+    if (!cameraSettings) {
+      console.error('❌ 响应中缺少 camera_settings_r50 字段')
       return null
     }
 
-    return params as CameraParams
+    // 构建 CameraParams 对象
+    const params: CameraParams = {
+      iso: cameraSettings.iso || 400,
+      aperture: cameraSettings.aperture || 'f/2.8',
+      shutterSpeed: cameraSettings.shutter_speed || '1/125',
+      whiteBalance: cameraSettings.white_balance?.mode_or_kelvin || '5200K',
+      sharpness: pictureStyle?.sharpness ?? 0,
+      contrast: pictureStyle?.contrast ?? 0,
+      saturation: pictureStyle?.saturation ?? 0,
+      tone: pictureStyle?.color_tone ?? 0,
+      suggestion: optimized.expert_advice || '请根据实际情况调整参数'
+    }
+
+    // 如果有闪光灯参数，添加到结果中
+    if (flash?.enable) {
+      params.flashMode = flash.mode || 'TTL'
+      params.flashPower = flash.power_or_comp || 'TTL'
+      params.flashAngle = flash.head_angle ? parseFlashAngle(flash.head_angle) : 0
+    }
+
+    console.log('✅ 成功解析扣子 API 响应')
+    console.log('📸 相机参数:', JSON.stringify(params, null, 2))
+
+    return params
   } catch (error) {
-    console.error('❌ 解析扣子 API 响应失败:', error, response)
+    console.error('❌ 解析扣子 API 响应失败:', error)
     return null
   }
+}
+
+/**
+ * 解析闪光灯角度字符串
+ * 例如: "Up 45 deg + Bounce to Ceiling" -> 45
+ */
+const parseFlashAngle = (angleStr: string): number => {
+  const match = angleStr.match(/(\d+)\s*deg/i)
+  return match ? Number.parseInt(match[1], 10) : 0
 }
 
 /**
@@ -249,35 +311,39 @@ ${response.statusCode >= 500 ? '- 扣子服务器内部错误\n- 请稍后重试
 
     // 检查响应数据
     const data = response.data as CozeResponse
-    if (!data || !data.output_text) {
-      const error = '扣子 API 返回数据无效：缺少 output_text 字段'
+    if (!data || !data.optimized_params) {
+      const error = '扣子 API 返回数据无效：缺少 optimized_params 字段'
       console.error('❌ 响应数据无效:', error)
       console.error('❌ 响应内容:', JSON.stringify(data, null, 2))
       throw new Error(error)
     }
 
     // 解析返回的参数
-    const params = parseCozeResponse(data.output_text)
+    const params = parseCozeResponse(data)
     if (!params) {
       const error = `扣子 API 返回的参数格式无效
 
 【返回内容】
-${data.output_text}
+${JSON.stringify(data, null, 2)}
 
 【期望格式】
-应该返回包含以下字段的 JSON 对象：
-- iso (number): ISO 值
-- aperture (string): 光圈值，如 "f/2.8"
-- shutterSpeed (string): 快门速度，如 "1/125"
-- whiteBalance (string): 白平衡，如 "5200K"
-- sharpness (number): 锐度，范围 0-7
-- contrast (number): 反差，范围 -4 到 4
-- saturation (number): 饱和度，范围 -4 到 4
-- tone (number): 色调，范围 -4 到 4
-- suggestion (string): 操作建议
-- flashMode (string, 可选): 闪光灯模式，如 "TTL"
-- flashPower (string, 可选): 闪光灯功率，如 "1/16"
-- flashAngle (number, 可选): 闪光灯角度`
+应该返回包含以下字段的对象：
+- optimized_params.camera_settings_r50 (必需): 相机设置
+  - iso (number): ISO 值
+  - aperture (string): 光圈值，如 "f/2.8"
+  - shutter_speed (string): 快门速度，如 "1/125"
+  - white_balance (object): 白平衡设置
+- optimized_params.picture_style_settings (可选): 照片风格设置
+  - sharpness (number): 锐度，范围 0-7
+  - contrast (number): 反差，范围 -4 到 4
+  - saturation (number): 饱和度，范围 -4 到 4
+  - color_tone (number): 色调，范围 -4 到 4
+- optimized_params.flash_godox_tt685ii (可选): 闪光灯设置
+  - enable (boolean): 是否启用
+  - mode (string): 模式，如 "TTL"
+  - power_or_comp (string): 功率或补偿，如 "TTL-0.3"
+  - head_angle (string): 灯头角度
+- optimized_params.expert_advice (string): 专家建议`
 
       console.error('❌ 解析失败:', error)
       throw new Error(error)
