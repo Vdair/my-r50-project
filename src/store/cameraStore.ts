@@ -1,6 +1,6 @@
 import Taro from '@tarojs/taro'
 import {create} from 'zustand'
-import {generateParamsWithAI} from '@/services/difyApi'
+// import {generateParamsWithAI} from '@/services/difyApi' // 已移除 Dify API 调用
 
 // 镜头类型
 export type LensType = '55mm' | '18-150mm' | '100-400mm'
@@ -131,19 +131,27 @@ export const useCameraStore = create<CameraStore>((set, get) => ({
       console.log('  - 风格:', state.style)
       console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 
-      // 调用 Dify AI 生成参数（不降级，失败直接抛出错误）
-      const aiParams = await generateParamsWithAI(
-        state.selectedLens,
-        state.flashEnabled,
-        state.scene,
-        state.customScene,
-        state.lighting,
-        state.weather,
-        state.style
-      )
+      // TODO: 替换为新的 API 调用逻辑
+      // 临时使用 mock 数据
+      await new Promise((resolve) => setTimeout(resolve, 1500)) // 模拟 API 延迟
+
+      const mockParams: CameraParams = {
+        iso: 1600,
+        aperture: 'f/2.8',
+        shutterSpeed: '1/125',
+        whiteBalance: '5200K',
+        sharpness: 4,
+        contrast: 0,
+        saturation: -1,
+        tone: 0,
+        flashMode: state.flashEnabled ? 'TTL' : undefined,
+        flashPower: state.flashEnabled ? '1/16' : undefined,
+        flashAngle: state.flashEnabled ? 45 : undefined,
+        suggestion: '使用适中的 ISO 和光圈，保持快门速度避免抖动。建议使用 M 档手动模式。'
+      }
 
       // 成功生成参数
-      set({params: aiParams, isGenerating: false})
+      set({params: mockParams, isGenerating: false})
 
       // 显示成功提示
       Taro.showToast({
@@ -164,8 +172,8 @@ export const useCameraStore = create<CameraStore>((set, get) => ({
 
       // 显示详细错误信息
       Taro.showModal({
-        title: 'Dify API 调用失败',
-        content: `错误信息：${error.message}\n\n请检查：\n1. 网络连接是否正常\n2. API 配置是否正确\n3. 查看控制台日志获取详细信息`,
+        title: '参数生成失败',
+        content: `错误信息：${error.message}\n\n请检查网络连接是否正常`,
         showCancel: false,
         confirmText: '我知道了'
       })

@@ -1,9 +1,6 @@
 /// <reference types="vite/client" />
 
-interface ImportMetaEnv {
-  readonly TARO_APP_DIFY_API_URL: string
-  readonly TARO_APP_DIFY_API_KEY: string
-}
+type ImportMetaEnv = {}
 
 interface ImportMeta {
   readonly env: ImportMetaEnv
