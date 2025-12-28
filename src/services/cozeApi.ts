@@ -308,6 +308,24 @@ export const generateParamsWithCoze = async (
   console.log('🔗 URL:', COZE_API_URL)
   console.log('🔑 Token:', `${COZE_API_TOKEN.substring(0, 30)}...`)
   console.log('📝 输入文本:', inputText)
+  console.log(
+    '📋 完整请求配置:',
+    JSON.stringify(
+      {
+        url: COZE_API_URL,
+        method: 'POST',
+        header: {
+          Authorization: `Bearer ${COZE_API_TOKEN.substring(0, 30)}...`,
+          'Content-Type': 'application/json'
+        },
+        data: {
+          input_text: inputText
+        }
+      },
+      null,
+      2
+    )
+  )
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 
   try {
@@ -329,6 +347,7 @@ export const generateParamsWithCoze = async (
     console.log('📥 扣子 API 响应')
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
     console.log('📊 状态码:', response.statusCode)
+    console.log('📋 响应头:', JSON.stringify(response.header, null, 2))
     console.log('📦 响应数据:', JSON.stringify(response.data, null, 2))
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 

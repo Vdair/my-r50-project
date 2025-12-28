@@ -79,15 +79,36 @@ export default defineConfig<'vite'>(async (merge) => {
                     changeOrigin: true,
                     rewrite: (path) => path.replace(/^\/api\/coze/, ''),
                     secure: true,
+                    // 保留所有请求头
+                    headers: {
+                      Connection: 'keep-alive'
+                    },
                     configure: (proxy, options) => {
                       proxy.on('proxyReq', (proxyReq, req, _res) => {
-                        console.log('🔄 代理请求:', req.method, req.url, '->', options.target + proxyReq.path)
+                        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+                        console.log('🔄 代理请求详情')
+                        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+                        console.log('📍 原始 URL:', req.method, req.url)
+                        console.log('📍 目标 URL:', options.target + proxyReq.path)
+                        console.log('📋 请求头:', JSON.stringify(proxyReq.getHeaders(), null, 2))
+                        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
                       })
-                      proxy.on('proxyRes', (proxyRes, req, _res) => {
-                        console.log('✅ 代理响应:', proxyRes.statusCode, req.url)
+                      proxy.on('proxyRes', (proxyRes, _req, _res) => {
+                        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+                        console.log('✅ 代理响应详情')
+                        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+                        console.log('📊 状态码:', proxyRes.statusCode)
+                        console.log('📋 响应头:', JSON.stringify(proxyRes.headers, null, 2))
+                        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
                       })
                       proxy.on('error', (err, req, _res) => {
-                        console.error('❌ 代理错误:', err.message, req.url)
+                        console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+                        console.error('❌ 代理错误详情')
+                        console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+                        console.error('📍 URL:', req.url)
+                        console.error('❌ 错误:', err.message)
+                        console.error('❌ 堆栈:', err.stack)
+                        console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
                       })
                     }
                   }
