@@ -7,15 +7,22 @@ import Taro from '@tarojs/taro'
 import type {CameraParams, LensType, LightingType, SceneType, StyleType, WeatherType} from '@/store/cameraStore'
 
 // 读取环境变量（支持小程序和 H5 环境）
-const COZE_API_URL =
-  (typeof process !== 'undefined' && process.env?.TARO_APP_COZE_API_URL) ||
-  (typeof import.meta !== 'undefined' && import.meta.env?.TARO_APP_COZE_API_URL) ||
-  ''
+// 在 H5 环境中，Vite 会在编译时替换 import.meta.env
+// 在小程序环境中，使用 process.env
+const getEnvVar = (key: string): string => {
+  // H5 环境（Vite）
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    return import.meta.env[key] || ''
+  }
+  // 小程序环境
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env[key] || ''
+  }
+  return ''
+}
 
-const COZE_API_TOKEN =
-  (typeof process !== 'undefined' && process.env?.TARO_APP_COZE_API_TOKEN) ||
-  (typeof import.meta !== 'undefined' && import.meta.env?.TARO_APP_COZE_API_TOKEN) ||
-  ''
+const COZE_API_URL = getEnvVar('TARO_APP_COZE_API_URL')
+const COZE_API_TOKEN = getEnvVar('TARO_APP_COZE_API_TOKEN')
 
 // 扣子 API 响应类型
 interface CozeResponse {
