@@ -1,6 +1,24 @@
-# Task: 优化参数展示页面 - 支持扣子 API 完整返回参数
+# Task: 修复 React useCallback 错误和缓存问题
 
 ## 当前状态
+🔧 **修复中** - 清除缓存以解决 React useCallback 错误
+
+## 问题描述
+- **错误信息**: `Uncaught TypeError: Cannot read properties of null (reading 'useCallback')`
+- **发生位置**: `pages/consultant/index.tsx:126:25`
+- **根本原因**: Vite 缓存了旧版本的代码，导致 React 模块加载异常
+
+## 解决方案
+✅ 清除 Vite 缓存（node_modules/.vite）
+✅ 清除 Taro 编译缓存（.temp, dist）
+⏳ 需要重启开发服务器
+⏳ 需要强制刷新浏览器
+
+---
+
+# Previous Task: 优化参数展示页面 - 支持扣子 API 完整返回参数
+
+## 状态
 ✅ **已完成** - 参数展示页面已优化，支持扣子 API 的所有返回字段
 
 ## 完成内容
