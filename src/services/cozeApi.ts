@@ -281,14 +281,20 @@ export const generateParamsWithCoze = async (
   const COZE_API_URL = getCozeApiUrl()
   const COZE_API_TOKEN = getCozeApiToken()
 
+  // 判断运行环境
+  const isH5 = typeof window !== 'undefined' && typeof document !== 'undefined'
+
+  // H5 环境使用代理路径，避免 CORS 问题
+  const requestUrl = isH5 ? '/api/coze/run' : COZE_API_URL
+
   // 调试日志：查看环境变量
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
   console.log('🔍 扣子 API 环境变量调试信息')
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-  console.log('运行环境:', typeof import.meta !== 'undefined' ? 'H5 (Vite)' : '小程序')
-  console.log('typeof process:', typeof process)
-  console.log('typeof import.meta:', typeof import.meta)
-  console.log('COZE_API_URL:', COZE_API_URL || '(未设置)')
+  console.log('运行环境:', isH5 ? 'H5 (浏览器)' : '小程序')
+  console.log('原始 URL:', COZE_API_URL || '(未设置)')
+  console.log('请求 URL:', requestUrl)
+  console.log('使用代理:', isH5 ? '是' : '否')
   console.log('COZE_API_TOKEN:', COZE_API_TOKEN ? '已设置' : '(未设置)')
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 
@@ -333,14 +339,16 @@ export const generateParamsWithCoze = async (
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
   console.log('📤 发送扣子 API 请求')
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-  console.log('🔗 URL:', COZE_API_URL)
+  console.log('🔗 请求 URL:', requestUrl)
+  console.log('🔗 原始 URL:', COZE_API_URL)
   console.log('🔑 Token:', `${COZE_API_TOKEN.substring(0, 30)}...`)
   console.log('📝 输入文本:', inputText)
+  console.log('🌐 使用代理:', isH5 ? '是 (Vite 代理)' : '否 (直接请求)')
   console.log(
     '📋 完整请求配置:',
     JSON.stringify(
       {
-        url: COZE_API_URL,
+        url: requestUrl,
         method: 'POST',
         header: {
           Authorization: `Bearer ${COZE_API_TOKEN.substring(0, 30)}...`,
@@ -359,7 +367,7 @@ export const generateParamsWithCoze = async (
   try {
     // 调用扣子工作流 API
     const response = await Taro.request({
-      url: COZE_API_URL,
+      url: requestUrl, // 使用代理路径（H5）或完整 URL（小程序）
       method: 'POST',
       header: {
         Authorization: `Bearer ${COZE_API_TOKEN}`,
