@@ -1,3 +1,7 @@
+# 欢迎使用你的秒哒应用代码包
+秒哒应用链接
+    URL:https://www.miaoda.cn/projects/app-8htx34d81fcx
+
 # R50 光影私教 (R50 Master)
 
 专门为佳能 Canon R50 相机和神牛 Godox TT685II 闪光灯用户设计的参数建议与知识库工具，帮助摄影爱好者快速获取拍摄参数建议和器材知识。

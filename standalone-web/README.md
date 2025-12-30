@@ -1,3 +1,7 @@
+# 欢迎使用你的秒哒应用代码包
+秒哒应用链接
+    URL:https://www.miaoda.cn/projects/app-8htx34d81fcx
+
 # R50 光影私教 - 独立 Web 版本
 
 这是一个**纯前端 Web 应用**，不依赖任何框架（Taro、React等），可以直接在浏览器中打开使用。

@@ -217,7 +217,7 @@ export default function Result() {
               className="bg-card rounded-2xl p-5 border border-border mb-4 animate-fade-in"
               style={{animationDelay: '0.25s'}}>
               <View className="flex flex-row items-center mb-4">
-                <View className="i-mdi-flash text-xl text-flash mr-2" />
+                <View className="i-mdi-flash text-xl text-red-500 mr-2" />
                 <Text className="text-base font-semibold text-foreground">闪光灯设置</Text>
               </View>
 
@@ -225,25 +225,25 @@ export default function Result() {
                 {params.flashMode && (
                   <View className="bg-secondary rounded-xl p-3">
                     <Text className="text-xs text-muted-foreground block mb-1">模式</Text>
-                    <Text className="text-lg font-mono-param font-bold text-flash block">{params.flashMode}</Text>
+                    <Text className="text-lg font-mono-param font-bold text-red-500 block">{params.flashMode}</Text>
                   </View>
                 )}
                 {params.flashPower && (
                   <View className="bg-secondary rounded-xl p-3">
                     <Text className="text-xs text-muted-foreground block mb-1">功率/补偿</Text>
-                    <Text className="text-lg font-mono-param font-bold text-flash block">{params.flashPower}</Text>
+                    <Text className="text-lg font-mono-param font-bold text-red-500 block">{params.flashPower}</Text>
                   </View>
                 )}
                 {params.flashZoom && (
                   <View className="bg-secondary rounded-xl p-3">
                     <Text className="text-xs text-muted-foreground block mb-1">焦距</Text>
-                    <Text className="text-lg font-mono-param font-bold text-flash block">{params.flashZoom}</Text>
+                    <Text className="text-lg font-mono-param font-bold text-red-500 block">{params.flashZoom}</Text>
                   </View>
                 )}
                 {params.flashAngle && (
                   <View className="bg-secondary rounded-xl p-3">
                     <Text className="text-xs text-muted-foreground block mb-1">灯头角度</Text>
-                    <Text className="text-lg font-mono-param font-bold text-flash block">{params.flashAngle}</Text>
+                    <Text className="text-lg font-mono-param font-bold text-red-500 block">{params.flashAngle}</Text>
                   </View>
                 )}
               </View>
@@ -251,7 +251,7 @@ export default function Result() {
               {params.flashHssSync !== undefined && (
                 <View className="flex flex-row items-center mb-3">
                   <View
-                    className={`w-4 h-4 rounded mr-2 ${params.flashHssSync ? 'bg-flash' : 'bg-muted-foreground/30'}`}
+                    className={`w-4 h-4 rounded mr-2 ${params.flashHssSync ? 'bg-red-500' : 'bg-muted-foreground/30'}`}
                   />
                   <Text className="text-sm text-foreground">高速同步 (HSS)</Text>
                 </View>
