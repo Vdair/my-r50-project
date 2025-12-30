@@ -1,0 +1,95 @@
+/* 自定义样式 */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* 选中状态 */
+.lens-btn.active,
+.scene-btn.active,
+.lighting-btn.active,
+.weather-btn.active,
+.style-btn.active {
+  border-color: #dc2626 !important;
+  background-color: #7f1d1d !important;
+}
+
+/* 闪光灯开关 */
+#flashToggle:checked ~ .flash-toggle-bg {
+  background-color: #f97316;
+}
+
+#flashToggle:checked ~ .flash-toggle-dot {
+  transform: translateX(1.5rem);
+}
+
+/* 加载动画 */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* 参数卡片动画 */
+.param-card {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 数字滚动效果 */
+.param-value {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  font-size: 2rem;
+}
+
+/* 难度等级颜色 */
+.difficulty-easy {
+  color: #10b981;
+}
+
+.difficulty-medium {
+  color: #f59e0b;
+}
+
+.difficulty-hard {
+  color: #ef4444;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .param-value {
+    font-size: 1.5rem;
+  }
+}

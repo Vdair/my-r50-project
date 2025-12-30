@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>参数结果 - R50 光影私教</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-900 text-white min-h-screen pb-20">
+  <!-- 头部 -->
+  <header class="bg-gradient-to-r from-red-600 to-red-700 p-6 shadow-lg">
+    <div class="max-w-4xl mx-auto flex items-center">
+      <button onclick="history.back()" class="mr-4">
+        <i class="mdi mdi-arrow-left text-2xl"></i>
+      </button>
+      <div class="flex-1">
+        <h1 class="text-2xl font-bold">参数建议</h1>
+        <p class="text-red-100 text-sm mt-1">AI 生成的最佳拍摄参数</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容 -->
+  <main class="max-w-4xl mx-auto p-6" id="resultContent">
+    <!-- 加载中 -->
+    <div id="loading" class="text-center py-12">
+      <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-red-500 mx-auto mb-4"></div>
+      <p class="text-gray-400">加载参数中...</p>
+    </div>
+
+    <!-- 结果容器 -->
+    <div id="result" class="hidden space-y-6">
+      <!-- 场景分析 -->
+      <section id="sceneAnalysisSection" class="param-card bg-gray-800 rounded-lg p-6 shadow-lg">
+        <h2 class="text-xl font-bold mb-4 flex items-center">
+          <i class="mdi mdi-image-filter-hdr text-red-500 mr-2"></i>
+          场景分析
+        </h2>
+        <div class="space-y-3">
+          <div>
+            <div class="text-sm text-gray-400 mb-1">场景摘要</div>
+            <div class="text-lg" id="sceneSummary">-</div>
+          </div>
+          <div>
+            <div class="text-sm text-gray-400 mb-1">难度等级</div>
+            <div class="text-lg font-bold" id="difficultyLevel">-</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 镜头推荐 -->
+      <section id="lensRecommendationSection" class="param-card bg-gray-800 rounded-lg p-6 shadow-lg">
+        <h2 class="text-xl font-bold mb-4 flex items-center">
+          <i class="mdi mdi-camera-iris text-red-500 mr-2"></i>
+          镜头推荐
+        </h2>
+        <div class="space-y-3">
+          <div>
+            <div class="text-sm text-gray-400 mb-1">推荐焦距</div>
+            <div class="text-2xl font-bold text-red-400" id="lensRecommendation">-</div>
+          </div>
+          <div>
+            <div class="text-sm text-gray-400 mb-1">推荐理由</div>
+            <div class="text-base" id="lensReason">-</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 相机设置 -->
+      <section class="param-card bg-gray-800 rounded-lg p-6 shadow-lg">
+        <h2 class="text-xl font-bold mb-4 flex items-center">
+          <i class="mdi mdi-camera text-red-500 mr-2"></i>
+          相机设置
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div class="text-center">
+            <div class="text-sm text-gray-400 mb-2">拍摄模式</div>
+            <div class="param-value text-red-400" id="shootingMode">-</div>
+          </div>
+          <div class="text-center">
+            <div class="text-sm text-gray-400 mb-2">ISO</div>
+            <div class="param-value text-red-400" id="iso">-</div>
+          </div>
+          <div class="text-center">
+            <div class="text-sm text-gray-400 mb-2">光圈</div>
+            <div class="param-value text-red-400" id="aperture">-</div>
+          </div>
+          <div class="text-center">
+            <div class="text-sm text-gray-400 mb-2">快门速度</div>
+            <div class="param-value text-red-400" id="shutterSpeed">-</div>
+          </div>
+          <div class="text-center">
+            <div class="text-sm text-gray-400 mb-2">曝光补偿</div>
+            <div class="param-value text-red-400" id="exposureCompensation">-</div>
+          </div>
+          <div class="text-center">
+            <div class="text-sm text-gray-400 mb-2">白平衡</div>
+            <div class="param-value text-red-400" id="whiteBalance">-</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 照片风格 -->
+      <section class="param-card bg-gray-800 rounded-lg p-6 shadow-lg">
+        <h2 class="text-xl font-bold mb-4 flex items-center">
+          <i class="mdi mdi-palette text-red-500 mr-2"></i>
+          照片风格
+        </h2>
+        <div class="mb-4">
+          <div class="text-sm text-gray-400 mb-1">风格名称</div>
+          <div class="text-xl font-bold text-red-400" id="styleName">-</div>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="text-center">
+            <div class="text-sm text-gray-400 mb-2">锐度</div>
+            <div class="param-value text-red-400" id="sharpness">-</div>
+          </div>
+          <div class="text-center">
+            <div class="text-sm text-gray-400 mb-2">反差</div>
+            <div class="param-value text-red-400" id="contrast">-</div>
+          </div>
+          <div class="text-center">
+            <div class="text-sm text-gray-400 mb-2">饱和度</div>
+            <div class="param-value text-red-400" id="saturation">-</div>
+          </div>
+          <div class="text-center">
+            <div class="text-sm text-gray-400 mb-2">色调</div>
+            <div class="param-value text-red-400" id="tone">-</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 闪光灯设置 -->
+      <section id="flashSection" class="param-card bg-gray-800 rounded-lg p-6 shadow-lg hidden">
+        <h2 class="text-xl font-bold mb-4 flex items-center">
+          <i class="mdi mdi-flash text-orange-500 mr-2"></i>
+          闪光灯设置 (Godox TT685II)
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div>
+            <div class="text-sm text-gray-400 mb-1">模式</div>
+            <div class="text-xl font-bold text-orange-400" id="flashMode">-</div>
+          </div>
+          <div>
+            <div class="text-sm text-gray-400 mb-1">功率</div>
+            <div class="text-xl font-bold text-orange-400" id="flashPower">-</div>
+          </div>
+          <div>
+            <div class="text-sm text-gray-400 mb-1">焦距</div>
+            <div class="text-xl font-bold text-orange-400" id="flashZoom">-</div>
+          </div>
+          <div>
+            <div class="text-sm text-gray-400 mb-1">灯头角度</div>
+            <div class="text-xl font-bold text-orange-400" id="flashAngle">-</div>
+          </div>
+          <div>
+            <div class="text-sm text-gray-400 mb-1">高速同步</div>
+            <div class="text-xl font-bold text-orange-400" id="flashHss">-</div>
+          </div>
+          <div class="md:col-span-1">
+            <div class="text-sm text-gray-400 mb-1">柔光建议</div>
+            <div class="text-base text-orange-400" id="flashDiffuser">-</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 专家建议 -->
+      <section class="param-card bg-gradient-to-br from-red-900 to-red-800 rounded-lg p-6 shadow-lg">
+        <h2 class="text-xl font-bold mb-4 flex items-center">
+          <i class="mdi mdi-lightbulb text-yellow-400 mr-2"></i>
+          专家建议
+        </h2>
+        <p class="text-base leading-relaxed" id="suggestion">-</p>
+      </section>
+
+      <!-- 操作按钮 -->
+      <div class="flex gap-4">
+        <button onclick="history.back()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-all">
+          <i class="mdi mdi-arrow-left mr-2"></i>
+          返回修改
+        </button>
+        <button onclick="window.location.href='index.html'" class="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-3 px-6 rounded-lg transition-all">
+          <i class="mdi mdi-refresh mr-2"></i>
+          重新生成
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/result.js"></script>
+</body>
+</html>

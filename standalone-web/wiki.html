@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>器材百科 - R50 光影私教</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-900 text-white min-h-screen pb-20">
+  <!-- 头部 -->
+  <header class="bg-gradient-to-r from-red-600 to-red-700 p-6 shadow-lg">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-2xl font-bold">器材百科</h1>
+      <p class="text-red-100 text-sm mt-1">Canon R50 & Godox TT685II 使用指南</p>
+    </div>
+  </header>
+
+  <!-- 主内容 -->
+  <main class="max-w-4xl mx-auto p-6 space-y-6">
+    <!-- Canon R50 -->
+    <section class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+      <div class="bg-gradient-to-r from-red-700 to-red-600 p-4">
+        <h2 class="text-xl font-bold flex items-center">
+          <i class="mdi mdi-camera mr-2"></i>
+          Canon EOS R50 拍摄模式
+        </h2>
+      </div>
+      
+      <div class="divide-y divide-gray-700">
+        <!-- A+ 场景智能 -->
+        <details class="group">
+          <summary class="p-4 cursor-pointer hover:bg-gray-750 flex items-center justify-between">
+            <div class="flex items-center">
+              <i class="mdi mdi-auto-fix text-red-400 text-2xl mr-3"></i>
+              <div>
+                <div class="font-bold">A+ 场景智能自动</div>
+                <div class="text-sm text-gray-400">相机自动识别场景并优化设置</div>
+              </div>
+            </div>
+            <i class="mdi mdi-chevron-down text-2xl group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="p-4 bg-gray-750 space-y-2">
+            <p class="text-gray-300">相机会自动检测拍摄场景（人像、风景、运动等），并自动调整参数以获得最佳效果。</p>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-red-400 mb-1">适用场景</div>
+              <p class="text-sm">初学者、快速抓拍、不确定参数设置时</p>
+            </div>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-red-400 mb-1">优点</div>
+              <p class="text-sm">操作简单，成功率高，适合新手</p>
+            </div>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-red-400 mb-1">缺点</div>
+              <p class="text-sm">无法手动控制参数，创意受限</p>
+            </div>
+          </div>
+        </details>
+
+        <!-- Tv 快门优先 -->
+        <details class="group">
+          <summary class="p-4 cursor-pointer hover:bg-gray-750 flex items-center justify-between">
+            <div class="flex items-center">
+              <i class="mdi mdi-timer text-red-400 text-2xl mr-3"></i>
+              <div>
+                <div class="font-bold">Tv 快门优先</div>
+                <div class="text-sm text-gray-400">手动设置快门速度，相机自动调整光圈</div>
+              </div>
+            </div>
+            <i class="mdi mdi-chevron-down text-2xl group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="p-4 bg-gray-750 space-y-2">
+            <p class="text-gray-300">您设置快门速度，相机自动选择合适的光圈值以获得正确曝光。</p>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-red-400 mb-1">适用场景</div>
+              <p class="text-sm">运动摄影、需要控制动态模糊的场景</p>
+            </div>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-red-400 mb-1">使用技巧</div>
+              <ul class="text-sm space-y-1 list-disc list-inside">
+                <li>高速快门（1/500s+）：冻结运动</li>
+                <li>慢速快门（1/30s-）：拍摄动态模糊效果</li>
+                <li>注意防抖：慢速快门需要三脚架</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <!-- Av 光圈优先 -->
+        <details class="group">
+          <summary class="p-4 cursor-pointer hover:bg-gray-750 flex items-center justify-between">
+            <div class="flex items-center">
+              <i class="mdi mdi-camera-iris text-red-400 text-2xl mr-3"></i>
+              <div>
+                <div class="font-bold">Av 光圈优先</div>
+                <div class="text-sm text-gray-400">手动设置光圈，相机自动调整快门速度</div>
+              </div>
+            </div>
+            <i class="mdi mdi-chevron-down text-2xl group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="p-4 bg-gray-750 space-y-2">
+            <p class="text-gray-300">您设置光圈值，相机自动选择合适的快门速度以获得正确曝光。</p>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-red-400 mb-1">适用场景</div>
+              <p class="text-sm">人像摄影、风景摄影、需要控制景深的场景</p>
+            </div>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-red-400 mb-1">使用技巧</div>
+              <ul class="text-sm space-y-1 list-disc list-inside">
+                <li>大光圈（f/1.8-f/2.8）：浅景深，背景虚化</li>
+                <li>中等光圈（f/5.6-f/8）：平衡景深和画质</li>
+                <li>小光圈（f/11-f/16）：大景深，全景清晰</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <!-- M 手动模式 -->
+        <details class="group">
+          <summary class="p-4 cursor-pointer hover:bg-gray-750 flex items-center justify-between">
+            <div class="flex items-center">
+              <i class="mdi mdi-cog text-red-400 text-2xl mr-3"></i>
+              <div>
+                <div class="font-bold">M 手动模式</div>
+                <div class="text-sm text-gray-400">完全手动控制所有参数</div>
+              </div>
+            </div>
+            <i class="mdi mdi-chevron-down text-2xl group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="p-4 bg-gray-750 space-y-2">
+            <p class="text-gray-300">您需要手动设置快门速度、光圈和 ISO，完全控制曝光。</p>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-red-400 mb-1">适用场景</div>
+              <p class="text-sm">棚拍、长曝光、需要精确控制曝光的场景</p>
+            </div>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-red-400 mb-1">使用技巧</div>
+              <ul class="text-sm space-y-1 list-disc list-inside">
+                <li>使用曝光指示器判断曝光是否正确</li>
+                <li>拍摄后查看直方图确认曝光</li>
+                <li>使用闪光灯时建议使用 M 模式</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <!-- Servo 伺服对焦 -->
+        <details class="group">
+          <summary class="p-4 cursor-pointer hover:bg-gray-750 flex items-center justify-between">
+            <div class="flex items-center">
+              <i class="mdi mdi-target text-red-400 text-2xl mr-3"></i>
+              <div>
+                <div class="font-bold">Servo 伺服对焦</div>
+                <div class="text-sm text-gray-400">连续追踪移动主体</div>
+              </div>
+            </div>
+            <i class="mdi mdi-chevron-down text-2xl group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="p-4 bg-gray-750 space-y-2">
+            <p class="text-gray-300">相机会持续追踪移动的主体，保持对焦。</p>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-red-400 mb-1">适用场景</div>
+              <p class="text-sm">运动摄影、儿童摄影、宠物摄影</p>
+            </div>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-red-400 mb-1">使用技巧</div>
+              <ul class="text-sm space-y-1 list-disc list-inside">
+                <li>半按快门启动追踪</li>
+                <li>配合连拍模式使用</li>
+                <li>开启眼部/面部检测提高成功率</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Godox TT685II -->
+    <section class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+      <div class="bg-gradient-to-r from-orange-600 to-orange-500 p-4">
+        <h2 class="text-xl font-bold flex items-center">
+          <i class="mdi mdi-flash mr-2"></i>
+          Godox TT685II 闪光灯
+        </h2>
+      </div>
+      
+      <div class="divide-y divide-gray-700">
+        <!-- TTL 自动测光 -->
+        <details class="group">
+          <summary class="p-4 cursor-pointer hover:bg-gray-750 flex items-center justify-between">
+            <div class="flex items-center">
+              <i class="mdi mdi-flash-auto text-orange-400 text-2xl mr-3"></i>
+              <div>
+                <div class="font-bold">TTL 自动测光</div>
+                <div class="text-sm text-gray-400">闪光灯自动调整输出功率</div>
+              </div>
+            </div>
+            <i class="mdi mdi-chevron-down text-2xl group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="p-4 bg-gray-750 space-y-2">
+            <p class="text-gray-300">闪光灯会根据场景自动调整输出功率，确保正确曝光。</p>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-orange-400 mb-1">适用场景</div>
+              <p class="text-sm">快速抓拍、光线变化频繁的场景</p>
+            </div>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-orange-400 mb-1">优点</div>
+              <p class="text-sm">操作简单，成功率高，适合新手</p>
+            </div>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-orange-400 mb-1">使用技巧</div>
+              <ul class="text-sm space-y-1 list-disc list-inside">
+                <li>可以使用闪光灯补偿调整亮度（±3EV）</li>
+                <li>注意主体距离，过近或过远可能曝光不准</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <!-- M 手动模式 -->
+        <details class="group">
+          <summary class="p-4 cursor-pointer hover:bg-gray-750 flex items-center justify-between">
+            <div class="flex items-center">
+              <i class="mdi mdi-flash text-orange-400 text-2xl mr-3"></i>
+              <div>
+                <div class="font-bold">M 手动模式</div>
+                <div class="text-sm text-gray-400">手动设置闪光灯输出功率</div>
+              </div>
+            </div>
+            <i class="mdi mdi-chevron-down text-2xl group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="p-4 bg-gray-750 space-y-2">
+            <p class="text-gray-300">您需要手动设置闪光灯的输出功率（1/1 到 1/128）。</p>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-orange-400 mb-1">适用场景</div>
+              <p class="text-sm">棚拍、需要精确控制光比的场景</p>
+            </div>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-orange-400 mb-1">功率参考</div>
+              <ul class="text-sm space-y-1 list-disc list-inside">
+                <li>1/1：最大功率，适合远距离或大场景</li>
+                <li>1/4 - 1/8：中等功率，适合一般人像</li>
+                <li>1/16 - 1/32：低功率，适合近距离补光</li>
+                <li>1/64 - 1/128：微弱功率，适合微距或特殊效果</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <!-- HSS 高速同步 -->
+        <details class="group">
+          <summary class="p-4 cursor-pointer hover:bg-gray-750 flex items-center justify-between">
+            <div class="flex items-center">
+              <i class="mdi mdi-flash-outline text-orange-400 text-2xl mr-3"></i>
+              <div>
+                <div class="font-bold">HSS 高速同步</div>
+                <div class="text-sm text-gray-400">突破快门同步速度限制</div>
+              </div>
+            </div>
+            <i class="mdi mdi-chevron-down text-2xl group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="p-4 bg-gray-750 space-y-2">
+            <p class="text-gray-300">允许在高于 1/200s 的快门速度下使用闪光灯。</p>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-orange-400 mb-1">适用场景</div>
+              <p class="text-sm">户外人像、需要大光圈虚化背景同时使用闪光灯</p>
+            </div>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-orange-400 mb-1">注意事项</div>
+              <ul class="text-sm space-y-1 list-disc list-inside">
+                <li>HSS 模式下闪光灯功率会降低</li>
+                <li>有效距离会缩短</li>
+                <li>电池消耗更快</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <!-- 前帘/后帘同步 -->
+        <details class="group">
+          <summary class="p-4 cursor-pointer hover:bg-gray-750 flex items-center justify-between">
+            <div class="flex items-center">
+              <i class="mdi mdi-camera-timer text-orange-400 text-2xl mr-3"></i>
+              <div>
+                <div class="font-bold">前帘/后帘同步</div>
+                <div class="text-sm text-gray-400">控制闪光灯触发时机</div>
+              </div>
+            </div>
+            <i class="mdi mdi-chevron-down text-2xl group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="p-4 bg-gray-750 space-y-2">
+            <p class="text-gray-300">控制闪光灯在快门开启或关闭时触发。</p>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-orange-400 mb-1">前帘同步（默认）</div>
+              <p class="text-sm">快门开启时立即闪光，适合大多数场景</p>
+            </div>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-orange-400 mb-1">后帘同步</div>
+              <p class="text-sm">快门关闭前闪光，适合拍摄运动轨迹效果</p>
+            </div>
+            <div class="bg-gray-800 p-3 rounded">
+              <div class="font-bold text-orange-400 mb-1">使用场景</div>
+              <ul class="text-sm space-y-1 list-disc list-inside">
+                <li>前帘：静态主体、一般人像</li>
+                <li>后帘：运动主体、需要动态模糊效果</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <!-- 底部导航 -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 shadow-lg">
+    <div class="max-w-4xl mx-auto flex justify-around">
+      <a href="index.html" class="flex-1 flex flex-col items-center py-3 text-gray-400 hover:text-white border-t-2 border-transparent">
+        <i class="mdi mdi-auto-fix text-2xl"></i>
+        <span class="text-xs mt-1">AI咨询</span>
+      </a>
+      <a href="wiki.html" class="flex-1 flex flex-col items-center py-3 text-red-500 border-t-2 border-red-500">
+        <i class="mdi mdi-book-open-variant text-2xl"></i>
+        <span class="text-xs mt-1">器材百科</span>
+      </a>
+      <a href="history.html" class="flex-1 flex flex-col items-center py-3 text-gray-400 hover:text-white border-t-2 border-transparent">
+        <i class="mdi mdi-history text-2xl"></i>
+        <span class="text-xs mt-1">历史记录</span>
+      </a>
+    </div>
+  </nav>
+</body>
+</html>
