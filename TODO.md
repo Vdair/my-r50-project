@@ -1,25 +1,101 @@
-# Task: 修复 React useCallback 错误和缓存问题
+# Task: 修复 H5 环境扣子 API 502 错误
 
 ## 当前状态
-🔧 **修复中** - 清除缓存以解决 React useCallback 错误
+✅ **已修复** - H5 环境现在使用 Vite 代理调用扣子 API
 
 ## 问题描述
-- **错误信息**: `Uncaught TypeError: Cannot read properties of null (reading 'useCallback')`
-- **发生位置**: `pages/consultant/index.tsx:126:25`
-- **根本原因**: Vite 缓存了旧版本的代码，导致 React 模块加载异常
+- **错误信息**: 502 Bad Gateway
+- **环境**: H5 浏览器环境
+- **现象**: 测试脚本可以正常调用扣子 API，但集成在小程序 H5 中就失败
+- **根本原因**: 代码直接使用完整 URL `https://3mp9d3y2dz.coze.site/run`，绕过了 Vite 代理
 
 ## 解决方案
-✅ 清除 Vite 缓存（node_modules/.vite）
-✅ 清除 Taro 编译缓存（.temp, dist）
-⏳ 需要重启开发服务器
-⏳ 需要强制刷新浏览器
+✅ 判断运行环境（H5 vs 小程序）
+✅ H5 环境使用代理路径 `/api/coze/run`
+✅ 小程序环境使用完整 URL
+✅ 添加详细的调试日志
+
+## 技术细节
+- **环境判断**: `typeof window !== 'undefined' && typeof document !== 'undefined'`
+- **H5 请求路径**: `/api/coze/run` (通过 Vite 代理)
+- **小程序请求路径**: `https://3mp9d3y2dz.coze.site/run` (直接请求)
+- **Vite 代理配置**: `/api/coze` -> `https://3mp9d3y2dz.coze.site`
+- **代理超时**: 30 秒（足够等待扣子 API 响应）
+
+## 测试步骤
+
+1. **清除缓存**（必须！）
+   ```bash
+   ./clear-cache.sh
+   ```
+
+2. **重启开发服务器**（必须！）
+   ```bash
+   # 停止当前服务器
+   Ctrl+C
+   
+   # 重新启动
+   npm run dev:h5
+   ```
+
+3. **强制刷新浏览器**
+   ```bash
+   Ctrl + Shift + R
+   ```
+
+4. **测试参数生成**
+   - 导航到 AI 参数咨询师页面
+   - 选择参数（镜头、闪光灯、场景、光线、天气、风格）
+   - 点击"生成最佳参数"按钮
+   - 等待约 10 秒
+   - 查看控制台日志，应该显示：
+     ```
+     🔍 扣子 API 环境变量调试信息
+     运行环境: H5 (浏览器)
+     请求 URL: /api/coze/run
+     使用代理: 是
+     ```
+   - 应该成功跳转到参数展示页面
+
+5. **验证代理工作**
+   - 打开浏览器开发者工具（F12）
+   - 切换到 Network 标签
+   - 查看请求，应该看到：
+     - 请求 URL: `http://localhost:10086/api/coze/run`
+     - 状态码: 200 OK
+     - 响应时间: 约 10 秒
+
+## 为什么之前会失败？
+
+**问题根源**：
+- 代码直接使用完整 URL `https://3mp9d3y2dz.coze.site/run`
+- 浏览器发起跨域请求（CORS）
+- 扣子 API 服务器不支持 CORS
+- 浏览器阻止请求，返回 502 错误
+
+**为什么测试脚本可以工作？**：
+- Node.js 环境不受 CORS 限制
+- 可以直接请求任何 URL
+
+**为什么现在可以工作？**：
+- H5 环境使用 Vite 代理
+- 浏览器请求 `http://localhost:10086/api/coze/run`（同源）
+- Vite 代理转发到 `https://3mp9d3y2dz.coze.site/run`
+- 绕过 CORS 限制
+
+## Notes
+- H5 环境必须使用代理，否则会遇到 CORS 问题
+- 小程序环境不受 CORS 限制，可以直接请求
+- 代理配置在 `config/index.ts` 中
+- 代理超时设置为 30 秒，足够等待扣子 API 响应
+- 修改代理配置后必须重启开发服务器
 
 ---
 
-# Previous Task: 优化参数展示页面 - 支持扣子 API 完整返回参数
+# Previous Task: 修复 React useCallback 错误和缓存问题
 
 ## 状态
-✅ **已完成** - 参数展示页面已优化，支持扣子 API 的所有返回字段
+✅ **已完成** - 清除缓存解决 React useCallback 错误
 
 ## 完成内容
 
