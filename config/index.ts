@@ -80,22 +80,23 @@ export default defineConfig<'vite'>(async (merge) => {
                     rewrite: (path) => path.replace(/^\/api\/coze/, ''),
                     secure: true,
                     // Vite 代理基于 http-proxy-middleware
-                    // 需要设置足够长的超时时间（扣子 API 响应需要约 10 秒）
-                    proxyTimeout: 30000, // 代理超时：30 秒
-                    timeout: 30000, // 请求超时：30 秒
+                    // 扣子 API 响应时间较长（约 20-30 秒），需要设置足够长的超时时间
+                    proxyTimeout: 60000, // 代理超时：60 秒
+                    timeout: 60000, // 请求超时：60 秒
                     configure: (proxy, options) => {
                       proxy.on('proxyReq', (proxyReq, req, _res) => {
                         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-                        console.log('🔄 代理请求详情')
+                        console.log('🔄 Vite 代理请求详情')
                         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
                         console.log('📍 原始 URL:', req.method, req.url)
                         console.log('📍 目标 URL:', options.target + proxyReq.path)
                         console.log('📋 请求头:', JSON.stringify(proxyReq.getHeaders(), null, 2))
+                        console.log('⏱️  超时设置: 60 秒')
                         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
                       })
                       proxy.on('proxyRes', (proxyRes, _req, _res) => {
                         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-                        console.log('✅ 代理响应详情')
+                        console.log('✅ Vite 代理响应详情')
                         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
                         console.log('📊 状态码:', proxyRes.statusCode)
                         console.log('📋 响应头:', JSON.stringify(proxyRes.headers, null, 2))
@@ -103,7 +104,7 @@ export default defineConfig<'vite'>(async (merge) => {
                       })
                       proxy.on('error', (err, req, _res) => {
                         console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-                        console.error('❌ 代理错误详情')
+                        console.error('❌ Vite 代理错误详情')
                         console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
                         console.error('📍 URL:', req.url)
                         console.error('❌ 错误:', err.message)
