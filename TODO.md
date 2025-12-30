@@ -1,6 +1,138 @@
-# Task: 创建独立的纯前端 Web 应用
+# Task: 修复 Taro H5 环境 502 错误 - 使用 CORS 代理
 
 ## 当前状态
+✅ **已修复** - 改用 CORS 代理服务替代 Vite 代理
+
+## 问题分析
+- **根本原因**：Vite 代理一直返回 502 错误，无法正常转发扣子 API 请求
+- **尝试的方案**：
+  1. 使用 Vite 代理 ❌
+  2. 判断运行环境 ❌
+  3. 清除缓存 ❌
+  4. 调整代理配置 ❌
+  5. 增加超时时间 ❌
+- **最终方案**：使用公共 CORS 代理服务
+
+## 解决方案
+
+### 代码修改
+修改 `src/services/cozeApi.ts` 中的 `getCozeApiUrl` 函数：
+- H5 环境：使用 CORS 代理服务 `https://cors-anywhere.herokuapp.com/`
+- 小程序环境：直接使用完整 URL
+
+### 使用步骤
+
+#### 步骤 1：启用 CORS 代理临时访问
+1. 在浏览器中访问：https://cors-anywhere.herokuapp.com/corsdemo
+2. 点击"Request temporary access to the demo server"按钮
+3. 等待几秒钟，直到看到"You now have temporary access"
+
+#### 步骤 2：清除缓存并重启
+```bash
+./clear-cache.sh
+npm run dev:h5
+```
+
+#### 步骤 3：强制刷新浏览器
+- Windows/Linux: Ctrl + Shift + R
+- Mac: Cmd + Shift + R
+
+#### 步骤 4：测试参数生成
+1. 选择参数（镜头、闪光灯、场景、光线、天气、风格）
+2. 点击"生成最佳参数"按钮
+3. 等待约 10-15 秒
+4. 应该成功跳转到参数展示页面
+
+## 注意事项
+
+### CORS 代理限制
+- ⚠️ 公共服务，可能不稳定
+- ⚠️ 临时访问权限有时间限制（通常几小时）
+- ⚠️ 如果再次遇到错误，需要重新启用临时访问
+- ⚠️ 不适合生产环境使用
+
+### 替代方案（强烈推荐）
+使用独立的纯前端 Web 应用（`standalone-web/` 目录）：
+- ✅ 无框架依赖
+- ✅ 无 CORS 问题
+- ✅ 更稳定、更快速
+- ✅ 可部署到任何静态网站托管服务
+
+详细说明：
+- `standalone-web/README.md`
+- `修复502错误指南.md`
+
+## 技术细节
+
+### CORS 代理工作原理
+```
+浏览器 → CORS 代理服务器 → 扣子 API
+       ← CORS 代理服务器 ← 扣子 API
+```
+
+CORS 代理服务器会：
+1. 接收浏览器的请求
+2. 转发到目标 API（扣子 API）
+3. 接收 API 响应
+4. 添加 CORS 头部
+5. 返回给浏览器
+
+### 代码变更
+```typescript
+// 修改前（使用 Vite 代理）
+if (isH5) {
+  return '/api/coze/run'  // 一直返回 502 错误
+}
+
+// 修改后（使用 CORS 代理）
+if (isH5) {
+  const corsProxy = 'https://cors-anywhere.herokuapp.com/'
+  const proxiedUrl = corsProxy + fullUrl
+  return proxiedUrl  // 绕过 CORS 限制
+}
+```
+
+## 验证步骤
+
+1. **查看控制台日志**
+   ```
+   🔗 使用 CORS 代理（H5 环境）: https://cors-anywhere.herokuapp.com/https://3mp9d3y2dz.coze.site/run
+   ⚠️ 注意：如果 CORS 代理不可用，请访问 https://cors-anywhere.herokuapp.com/corsdemo 启用临时访问
+   ```
+
+2. **查看网络请求**
+   - 请求 URL: `https://cors-anywhere.herokuapp.com/https://3mp9d3y2dz.coze.site/run`
+   - 状态码: 200 OK
+   - 响应时间: 约 10-15 秒
+
+3. **验证参数展示**
+   - 场景分析
+   - 镜头推荐
+   - 相机设置
+   - 照片风格
+   - 闪光灯设置
+   - 专家建议
+
+## 常见问题
+
+### 问题 1：仍然遇到 CORS 错误
+**解决方案**：
+1. 确认已访问 https://cors-anywhere.herokuapp.com/corsdemo
+2. 确认已点击"Request temporary access"按钮
+3. 等待几秒钟后刷新页面
+
+### 问题 2：CORS 代理返回 429 错误
+**原因**：请求频率过高
+**解决方案**：等待几分钟后重试
+
+### 问题 3：CORS 代理不可用
+**解决方案**：使用独立 Web 应用（`standalone-web/` 目录）
+
+---
+
+# Previous Task: 创建独立的纯前端 Web 应用
+
+## 状态
 ✅ **已完成** - 创建了完全独立的纯前端 Web 应用，不依赖 Taro 框架
 
 ## 背景
