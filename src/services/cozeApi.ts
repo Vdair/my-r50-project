@@ -274,17 +274,17 @@ export const generateParamsWithCoze = async (
   // 判断运行环境
   const isH5 = typeof window !== 'undefined' && typeof document !== 'undefined'
 
-  // H5 环境使用代理路径，避免 CORS 问题
-  const requestUrl = isH5 ? '/api/coze/run' : COZE_API_URL
+  // 🔥 重要：直接使用完整 URL，不使用代理
+  // 经过测试，扣子 API 支持跨域请求（CORS），无需代理
+  const requestUrl = COZE_API_URL
 
   // 调试日志：查看环境变量
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
   console.log('🔍 扣子 API 环境变量调试信息')
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
   console.log('运行环境:', isH5 ? 'H5 (浏览器)' : '小程序')
-  console.log('原始 URL:', COZE_API_URL || '(未设置)')
   console.log('请求 URL:', requestUrl)
-  console.log('使用代理:', isH5 ? '是' : '否')
+  console.log('使用代理:', '否（直接调用完整 URL）')
   console.log('COZE_API_TOKEN:', COZE_API_TOKEN ? '已设置' : '(未设置)')
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 
@@ -330,10 +330,9 @@ export const generateParamsWithCoze = async (
   console.log('📤 发送扣子 API 请求')
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
   console.log('🔗 请求 URL:', requestUrl)
-  console.log('🔗 原始 URL:', COZE_API_URL)
   console.log('🔑 Token:', `${COZE_API_TOKEN.substring(0, 30)}...`)
   console.log('📝 输入文本:', inputText)
-  console.log('🌐 使用代理:', isH5 ? '是 (Vite 代理)' : '否 (直接请求)')
+  console.log('🌐 使用代理:', '否（直接调用完整 URL）')
   console.log(
     '📋 完整请求配置:',
     JSON.stringify(
