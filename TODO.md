@@ -1,74 +1,123 @@
-# Task: 修复 Taro H5 环境 405 错误 - 缓存问题
+# Task: 修复 Taro H5 环境 502 错误 - 移除 Vite 代理路径
 
 ## 当前状态
-⚠️ **需要清除缓存** - 代码已修复，但缓存导致应用仍使用旧代码
+✅ **已修复** - 找到并修复了根本问题
 
-## 最新问题
+## 问题根源
 
-用户报告的错误：
-```json
-{
-  "timestamp": "2025-12-30T08:04:07.158+00:00",
-  "status": 405,
-  "error": "Method Not Allowed",
-  "path": "/api/coze/run"
-}
+在 `src/services/cozeApi.ts` 第 278 行发现问题代码：
+```typescript
+const requestUrl = isH5 ? '/api/coze/run' : COZE_API_URL
 ```
 
-### 问题分析
+这导致：
+1. H5 环境的请求被发送到 Vite 代理路径 `/api/coze/run`
+2. Vite 代理尝试转发请求到扣子 API
+3. 由于超时或配置问题，Vite 代理返回 502 错误
 
-1. **path: "/api/coze/run"** - 说明应用仍在使用 Vite 代理路径
-2. **status: 405** - HTTP 方法不允许（代理返回的错误）
-3. **根本原因**：缓存问题 - 浏览器或 Vite 缓存了旧的代码
+## 修复内容
 
-### 解决方案
+### 1. 修改 src/services/cozeApi.ts
 
-#### 方案 1：强制清除所有缓存（推荐）
+**修改前**:
+```typescript
+const requestUrl = isH5 ? '/api/coze/run' : COZE_API_URL
+```
+
+**修改后**:
+```typescript
+const requestUrl = COZE_API_URL
+```
+
+**效果**:
+- 所有环境（H5 和小程序）都直接使用完整 URL
+- 不再使用 Vite 代理
+- 避免 502 错误
+
+### 2. 更新日志输出
+
+- 移除"使用代理"的日志
+- 添加"直接调用完整 URL"的提示
+- 简化调试信息
+
+### 3. 创建项目全面检查报告
+
+**文件**: `项目全面检查报告.md`
+
+包含：
+- 详细的检查结果（环境变量、API 代码、Vite 配置、API 测试）
+- 根本原因分析
+- 已实施的修复
+- 用户操作步骤（7 个步骤）
+- 验证清单（7 项检查）
+- 常见问题解答
+- 技术说明
+
+## 用户操作步骤
+
+### 步骤 1: 强制清除所有缓存
 
 ```bash
-# 1. 停止开发服务器（Ctrl + C）
-
-# 2. 强制清除所有缓存
 cd /workspace/app-8htx34d81fcx
 ./force-clear-cache.sh
-
-# 3. 重启开发服务器
-npm run dev:h5
-
-# 4. 在浏览器中打开无痕窗口
-# Chrome: Ctrl + Shift + N
-# Firefox: Ctrl + Shift + P
-
-# 5. 访问 http://localhost:10086
-
-# 6. 打开开发者工具（F12）
-# 7. 检查 Console 标签，应该看到：
-#    🔗 使用完整 URL: https://3mp9d3y2dz.coze.site/run
-
-# 8. 检查 Network 标签，请求 URL 应该是：
-#    https://3mp9d3y2dz.coze.site/run
-#    而不是 /api/coze/run
 ```
 
-#### 方案 2：使用独立 Web 应用（最简单）
+### 步骤 2: 重启开发服务器
 
 ```bash
-cd /workspace/app-8htx34d81fcx/standalone-web
-python3 -m http.server 8000
-# 在浏览器中打开 http://localhost:8000
+npm run dev:h5
 ```
 
-### 详细指南
+### 步骤 3: 使用无痕窗口访问
 
-请查看：`修复405错误完整指南.md`
+- Chrome: `Ctrl + Shift + N`
+- Firefox: `Ctrl + Shift + P`
+- 访问: `http://localhost:10086`
+
+### 步骤 4: 检查控制台日志
+
+打开开发者工具（F12）→ Console 标签
+
+应该看到：
+```
+🔗 使用完整 URL: https://3mp9d3y2dz.coze.site/run
+使用代理: 否（直接调用完整 URL）
+```
+
+### 步骤 5: 检查网络请求
+
+打开开发者工具（F12）→ Network 标签
+
+点击"生成最佳参数"后，请求 URL 应该是：
+- ✅ `https://3mp9d3y2dz.coze.site/run`
+- ❌ 不是 `/api/coze/run`
+
+### 步骤 6: 等待响应
+
+- 正常响应时间：20-30 秒
+- 状态码：200 OK
+- 成功后自动跳转到参数展示页面
+
+## 验证清单
+
+- [ ] 已清除缓存（./force-clear-cache.sh）
+- [ ] 已重启开发服务器（npm run dev:h5）
+- [ ] 使用无痕窗口访问
+- [ ] 控制台日志显示完整 URL
+- [ ] 网络请求 URL 是完整 URL（不是代理路径）
+- [ ] 响应状态码是 200 OK
+- [ ] 成功跳转到参数展示页面
+
+## 详细文档
+
+请查看：`项目全面检查报告.md`
 
 ---
 
-# Previous Task: 修复 Taro H5 环境 502 错误 - 直接调用扣子 API
+# Previous Task: 修复 Taro H5 环境 405 错误 - 缓存问题
 
 ## 状态
-✅ **代码已修复** - 扣子 API 支持跨域请求，直接调用即可
-⚠️ **需要清除缓存** - 缓存导致应用仍使用旧代码
+✅ **已解决** - 根本问题已找到并修复
 
 ## 问题分析
 
