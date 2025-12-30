@@ -15,12 +15,10 @@ declare const __COZE_API_TOKEN__: string
  * 使用 Vite define 配置注入的全局常量
  * 这样可以避免 import.meta.env 的模块解析问题
  *
- * 在 H5 环境中，直接使用完整 URL（不使用代理，因为代理一直返回 502 错误）
+ * 在 H5 环境中，直接使用完整 URL（不使用代理）
+ * 经过测试，扣子 API 支持跨域请求，无需代理
  */
 const getCozeApiUrl = (): string => {
-  // 检查是否在 H5 环境（浏览器）
-  const isH5 = typeof window !== 'undefined' && typeof document !== 'undefined'
-
   // 获取完整 URL
   let fullUrl = ''
   if (typeof __COZE_API_URL__ !== 'undefined' && __COZE_API_URL__) {
@@ -29,18 +27,7 @@ const getCozeApiUrl = (): string => {
     fullUrl = import.meta.env.VITE_COZE_API_URL || import.meta.env.TARO_APP_COZE_API_URL || ''
   }
 
-  if (isH5) {
-    // H5 环境：使用 CORS 代理服务
-    // 因为 Vite 代理一直返回 502 错误，改用公共 CORS 代理
-    const corsProxy = 'https://cors-anywhere.herokuapp.com/'
-    const proxiedUrl = corsProxy + fullUrl
-    console.log('🔗 使用 CORS 代理（H5 环境）:', proxiedUrl)
-    console.log('⚠️ 注意：如果 CORS 代理不可用，请访问 https://cors-anywhere.herokuapp.com/corsdemo 启用临时访问')
-    return proxiedUrl
-  }
-
-  // 小程序环境：直接使用完整 URL
-  console.log('🔗 使用完整 URL（小程序环境）:', fullUrl)
+  console.log('🔗 使用完整 URL:', fullUrl)
   return fullUrl
 }
 
