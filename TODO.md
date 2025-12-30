@@ -1,7 +1,74 @@
-# Task: 修复 Taro H5 环境 502 错误 - 直接调用扣子 API
+# Task: 修复 Taro H5 环境 405 错误 - 缓存问题
 
 ## 当前状态
-✅ **已修复** - 扣子 API 支持跨域请求，直接调用即可
+⚠️ **需要清除缓存** - 代码已修复，但缓存导致应用仍使用旧代码
+
+## 最新问题
+
+用户报告的错误：
+```json
+{
+  "timestamp": "2025-12-30T08:04:07.158+00:00",
+  "status": 405,
+  "error": "Method Not Allowed",
+  "path": "/api/coze/run"
+}
+```
+
+### 问题分析
+
+1. **path: "/api/coze/run"** - 说明应用仍在使用 Vite 代理路径
+2. **status: 405** - HTTP 方法不允许（代理返回的错误）
+3. **根本原因**：缓存问题 - 浏览器或 Vite 缓存了旧的代码
+
+### 解决方案
+
+#### 方案 1：强制清除所有缓存（推荐）
+
+```bash
+# 1. 停止开发服务器（Ctrl + C）
+
+# 2. 强制清除所有缓存
+cd /workspace/app-8htx34d81fcx
+./force-clear-cache.sh
+
+# 3. 重启开发服务器
+npm run dev:h5
+
+# 4. 在浏览器中打开无痕窗口
+# Chrome: Ctrl + Shift + N
+# Firefox: Ctrl + Shift + P
+
+# 5. 访问 http://localhost:10086
+
+# 6. 打开开发者工具（F12）
+# 7. 检查 Console 标签，应该看到：
+#    🔗 使用完整 URL: https://3mp9d3y2dz.coze.site/run
+
+# 8. 检查 Network 标签，请求 URL 应该是：
+#    https://3mp9d3y2dz.coze.site/run
+#    而不是 /api/coze/run
+```
+
+#### 方案 2：使用独立 Web 应用（最简单）
+
+```bash
+cd /workspace/app-8htx34d81fcx/standalone-web
+python3 -m http.server 8000
+# 在浏览器中打开 http://localhost:8000
+```
+
+### 详细指南
+
+请查看：`修复405错误完整指南.md`
+
+---
+
+# Previous Task: 修复 Taro H5 环境 502 错误 - 直接调用扣子 API
+
+## 状态
+✅ **代码已修复** - 扣子 API 支持跨域请求，直接调用即可
+⚠️ **需要清除缓存** - 缓存导致应用仍使用旧代码
 
 ## 问题分析
 
