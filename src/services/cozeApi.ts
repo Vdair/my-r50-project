@@ -4,7 +4,7 @@
  */
 
 import Taro from '@tarojs/taro'
-import type {CameraParams, LensType, LightingType, SceneType, StyleType, WeatherType} from '@/store/cameraStore'
+import type { CameraParams, LensType, LightingType, SceneType, StyleType, WeatherType } from '@/store/cameraStore'
 
 // 声明全局常量类型（由 Vite define 配置注入）
 declare const __COZE_API_URL__: string
@@ -199,16 +199,16 @@ const parseCozeResponse = (data: CozeResponse): CameraParams | null => {
       // 场景分析
       sceneAnalysis: sceneAnalysis
         ? {
-            summary: sceneAnalysis.summary || '',
-            difficultyLevel: sceneAnalysis.difficulty_level || ''
-          }
+          summary: sceneAnalysis.summary || '',
+          difficultyLevel: sceneAnalysis.difficulty_level || ''
+        }
         : undefined,
       // 镜头推荐
       lensRecommendation: lensRecommendation
         ? {
-            focalLength: lensRecommendation.focal_length || '',
-            reason: lensRecommendation.reason || ''
-          }
+          focalLength: lensRecommendation.focal_length || '',
+          reason: lensRecommendation.reason || ''
+        }
         : undefined,
       // 相机设置
       shootingMode: cameraSettings.shooting_mode || 'M',
@@ -277,7 +277,8 @@ export const generateParamsWithCoze = async (
   // 🔥 重要：H5 环境必须使用 Vite 代理
   // 扣子 API 不支持跨域请求（CORS），直接调用会报 Failed to fetch 错误
   // 小程序环境可以直接调用完整 URL
-  const requestUrl = isH5 ? '/api/coze/run' : COZE_API_URL
+  // fix: 仅在开发环境使用代理，生产环境使用完整 URL
+  const requestUrl = (isH5 && process.env.NODE_ENV === 'development') ? '/api/coze/run' : COZE_API_URL
 
   // 调试日志：查看环境变量
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
