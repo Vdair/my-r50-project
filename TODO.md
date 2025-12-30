@@ -1,7 +1,149 @@
-# Task: 修复 Taro H5 环境 502 错误 - 移除 Vite 代理路径
+# Task: 修复 Failed to fetch 错误 - 重新启用 Vite 代理
 
 ## 当前状态
-✅ **已修复** - 找到并修复了根本问题
+✅ **已修复** - 重新启用 Vite 代理，解决 CORS 跨域错误
+
+## 错误分析
+
+用户报告错误：
+```
+Failed to fetch
+```
+
+这是典型的 CORS 跨域错误，说明扣子 API **不支持跨域请求**。
+
+## 根本原因
+
+之前的修复**错误地认为**扣子 API 支持 CORS，直接调用完整 URL：
+```typescript
+const requestUrl = COZE_API_URL // ❌ 错误：导致 CORS 错误
+```
+
+实际情况：
+- 扣子 API **不支持跨域请求**
+- 浏览器阻止了跨域请求
+- 导致 `Failed to fetch` 错误
+
+## 修复内容
+
+### 1. 修改 src/services/cozeApi.ts
+
+**修改前**:
+```typescript
+const requestUrl = COZE_API_URL // ❌ 导致 CORS 错误
+```
+
+**修改后**:
+```typescript
+const requestUrl = isH5 ? '/api/coze/run' : COZE_API_URL // ✅ H5 使用代理
+```
+
+**效果**:
+- H5 环境使用 Vite 代理路径，避免 CORS 错误
+- 小程序环境直接使用完整 URL
+- 增加超时时间：30秒 → 60秒
+
+### 2. 修改 config/index.ts
+
+**修改内容**:
+- 增加 Vite 代理超时时间：30秒 → 60秒
+- `proxyTimeout: 60000`
+- `timeout: 60000`
+- 更新代理日志输出
+
+## 关键要点
+
+1. **扣子 API 不支持跨域请求（CORS）**
+2. **H5 环境必须使用 Vite 代理**
+3. **代理超时时间必须足够长（60秒）**
+4. **小程序环境可以直接调用完整 URL**
+
+## 用户操作步骤
+
+### 步骤 1: 清除缓存
+
+```bash
+cd /workspace/app-8htx34d81fcx
+./force-clear-cache.sh
+```
+
+### 步骤 2: 重启开发服务器
+
+```bash
+npm run dev:h5
+```
+
+### 步骤 3: 使用无痕窗口访问
+
+- Chrome: `Ctrl + Shift + N`
+- Firefox: `Ctrl + Shift + P`
+- 访问: `http://localhost:10086`
+
+### 步骤 4: 检查控制台日志
+
+打开开发者工具（F12）→ Console 标签
+
+应该看到：
+```
+🔗 请求 URL: /api/coze/run
+🌐 使用代理: 是（Vite 代理，避免 CORS 错误）
+```
+
+### 步骤 5: 检查网络请求
+
+打开开发者工具（F12）→ Network 标签
+
+点击"生成最佳参数"后，请求 URL 应该是：
+- ✅ `/api/coze/run` 或 `http://localhost:10086/api/coze/run`
+
+### 步骤 6: 等待响应
+
+- 正常响应时间：20-30 秒
+- 状态码：200 OK
+- 成功后自动跳转到参数展示页面
+
+## 验证清单
+
+- [ ] 已清除缓存（./force-clear-cache.sh）
+- [ ] 已重启开发服务器（npm run dev:h5）
+- [ ] 使用无痕窗口访问
+- [ ] 控制台日志显示使用代理
+- [ ] 网络请求 URL 是代理路径（/api/coze/run）
+- [ ] 响应状态码是 200 OK
+- [ ] 成功跳转到参数展示页面
+
+## 技术说明
+
+### 为什么需要使用 Vite 代理？
+
+1. **CORS 限制**：
+   - 浏览器的同源策略阻止跨域请求
+   - 扣子 API 不支持 CORS（没有设置 Access-Control-Allow-Origin 头）
+   - 直接调用会报 `Failed to fetch` 错误
+
+2. **Vite 代理的作用**：
+   - 在开发服务器端转发请求
+   - 绕过浏览器的 CORS 限制
+   - 请求流程：浏览器 → Vite 代理 → 扣子 API
+
+3. **为什么小程序不需要代理**：
+   - 小程序环境没有浏览器的 CORS 限制
+   - 可以直接调用任何 HTTP API
+
+### 超时时间设置
+
+- **Vite 代理超时**：60 秒
+- **Taro.request 超时**：60 秒
+- **扣子 API 响应时间**：约 20-30 秒
+- **为什么设置 60 秒**：留有足够的余量，避免超时
+
+---
+
+# Previous Task: 修复 Taro H5 环境 502 错误 - 移除 Vite 代理路径
+
+## 状态
+❌ **修复错误** - 错误地移除了 Vite 代理，导致 CORS 错误
+✅ **已纠正** - 重新启用 Vite 代理
 
 ## 问题根源
 
