@@ -1,0 +1,8 @@
+{
+    "rewrites": [
+        {
+            "source": "/api/coze/run",
+            "destination": "https://3mp9d3y2dz.coze.site/run"
+        }
+    ]
+}

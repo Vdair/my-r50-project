@@ -274,11 +274,9 @@ export const generateParamsWithCoze = async (
   // 判断运行环境
   const isH5 = typeof window !== 'undefined' && typeof document !== 'undefined'
 
-  // 🔥 重要：H5 环境必须使用 Vite 代理
-  // 扣子 API 不支持跨域请求（CORS），直接调用会报 Failed to fetch 错误
-  // 小程序环境可以直接调用完整 URL
-  // fix: 仅在开发环境使用代理，生产环境使用完整 URL
-  const requestUrl = (isH5 && process.env.NODE_ENV === 'development') ? '/api/coze/run' : COZE_API_URL
+  // 🔥 重要：H5 环境必须使用 Vite 代理 (开发环境) 或 Vercel Rewrite (生产环境)
+  // 扣子 API 不支持跨域请求（CORS），必须通过同源借口转发
+  const requestUrl = isH5 ? '/api/coze/run' : COZE_API_URL
 
   // 调试日志：查看环境变量
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
